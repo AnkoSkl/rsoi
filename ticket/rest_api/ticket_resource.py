@@ -29,4 +29,13 @@ class TicketResource(Resource):
         response.status_code = 204
         return response
 
-    
+
+class TicketCreateResource(Resource):
+    def post(self):
+        payload = jsonpickle.decode(flask.request.data)
+        ticket_id = repo.create(payload["seance_id"], payload["seat_number"])
+        ticket = repo.get(ticket_id)
+        response = app.make_response("")
+        response.status_code = 201
+        response.data = jsonpickle.encode(ticket)
+        return response
