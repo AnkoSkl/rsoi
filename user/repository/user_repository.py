@@ -7,20 +7,21 @@ db = MongoAlchemy(app)
 
 
 class Users(db.Document):
+    ticket_ids = db.TupleField()
     name = db.StringField()
     password = db.StringField()
 
 
 class UserRepository:
     def create(self, name, password):
-        user = Users(name=name, password=password)
+        user = Users(ticket_ids=(), name=name, password=str(password))
         user.save()
         return user.mongo_id
 
     def get(self, user_id):
         if self.exists(user_id):
             user = Users.query.get(user_id)
-            return User(user_id=user.mongo_id, name=user.name, password=user.password)
+            return User(user_id=user.mongo_id, ticket_ids=user.ticket_ids, name=user.name, password=user.password)
         else:
             return None
 
@@ -28,13 +29,21 @@ class UserRepository:
         users = []
         all_users = Users.query.all()
         for user in all_users:
-            users.append(User(user_id=user.mongo_id, name=user.name, password=user.password))
+            users.append(User(user_id=user.mongo_id, ticket_ids=user.ticket_ids, name=user.name,
+                              password=user.password))
         return users
 
     def delete(self, user_id):
         if self.exists(user_id):
             user = Users.query.get(user_id)
             user.remove()
+
+    def assign_ticket(self, user_id, ticket_id):
+        if self.exists(user_id):
+            user = Users.query.get(user_id)
+            ticket_ids = user.ticket_ids + tuple(ticket_id)
+            user.ticket_ids = ticket_ids
+            user.save()
 
     def exists(self, user_id):
         result = Users.query.get(user_id)

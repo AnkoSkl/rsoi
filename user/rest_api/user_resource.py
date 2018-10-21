@@ -29,6 +29,16 @@ class UserResource(Resource):
         response.status_code = 204
         return response
 
+    def patch(self, user_id):
+        abort_if_seance_doesnt_exist(user_id)
+        payload = jsonpickle.decode(flask.request.data)
+        repo.assign_ticket(user_id, payload["ticket_id"])
+        user = repo.get(user_id)
+        responce = app.make_response("")
+        responce.status_code = 201
+        responce.data = jsonpickle.encode(user)
+        return responce
+
 
 class UserCreateResource(Resource):
     def post(self):
@@ -41,7 +51,7 @@ class UserCreateResource(Resource):
         return response
 
 
-class SeanceListResource(Resource):
+class UserListResource(Resource):
     def get(self):
         users_list = repo.read_all()
         response = app.make_response("")
