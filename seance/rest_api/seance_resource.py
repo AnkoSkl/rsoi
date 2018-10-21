@@ -28,3 +28,14 @@ class SeanceResource(Resource):
         response = app.make_response("Seance %d deleted successfully" % seance_id)
         response.status_code = 204
         return response
+
+
+class SeanceCreateResource(Resource):
+    def post(self):
+        payload = jsonpickle.decode(flask.request.data)
+        seance_id = repo.create(payload["movie_id"], payload["datetime"], payload["number_of_seats"])
+        seance = repo.get(seance_id)
+        response = app.make_response("")
+        response.status_code = 201
+        response.data = jsonpickle.encode(seance)
+        return response
