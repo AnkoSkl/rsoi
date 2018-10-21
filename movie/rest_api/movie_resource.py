@@ -31,7 +31,7 @@ class MovieResource(Resource):
 
 
 class MovieCreateResource(Resource):
-    def movie(self):
+    def post(self):
         payload = jsonpickle.decode(flask.request.data)
         movie_id = repo.create(payload["name"], payload["description"], payload["length"])
         movie = repo.get(movie_id)

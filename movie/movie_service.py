@@ -1,14 +1,16 @@
 from movie import app
+from flask_restful import Api
+from movie.rest_api.movie_resource import *
 from movie.repository.movie_repository import Movies
 
-@app.route('/')
-def test():
-    new_movie = Movies()
-    new_movie.description = 'a'
-    new_movie.length = 0
-    new_movie.name = 'ababa'
-    new_movie.save()
-    return new_movie.name
+
+api = Api(app)
+service_namespace = "/movies"
+
+api.add_resource(MovieListResource, "/movies")
+api.add_resource(MovieResource, "/movies/<movie_id>")
+api.add_resource(MovieCreateResource, "/movies/create")
+
 
 if __name__ == '__main__':
-    app.run()
+    app.run(port=5002)
