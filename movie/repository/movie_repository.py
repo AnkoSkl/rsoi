@@ -39,4 +39,4 @@ class MovieRepository:
             Movies.commit()
 
     def exists(self, movie_id):
-        return len(Movies.query.filter(Movies.id==movie_id))>0
+        return len(Movies.query.filter(Movies.id==movie_id)) > 0
