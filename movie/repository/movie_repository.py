@@ -8,16 +8,21 @@ db = MongoAlchemy(app)
 
 
 class Movies(db.Document):
-    id = db.IntField()
+    id = db.StringField()
     name = db.StringField()
     description = db.StringField()
     length = db.IntField()
 
+    def get_id(self):
+        return self._id
+
 
 class MovieRepository:
-    def create(self, movie_id, name, description, length):
-        movie = Movies(movie_id=movie_id, name=name, description=description, length=length)
+    def create(self, name, description, length):
+        movie = Movies(name=name, description=description, length=length)
+        movie.id = movie.get_id()
         movie.save()
+
         return movie.id
 
     def get(self, movie_id):
