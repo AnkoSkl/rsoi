@@ -37,8 +37,7 @@ class MovieRepository:
     def delete(self, movie_id):
         if self.exists(movie_id):
             movie = Movies.query.get(movie_id)
-            Movies.delete(movie)
-            Movies.commit()
+            movie.remove()
 
     def exists(self, movie_id):
         result = Movies.query.get(movie_id)
