@@ -13,4 +13,4 @@ api.add_resource(MovieCreateResource, "/movies/create")
 
 
 if __name__ == '__main__':
-    app.run(port=5002)
+    app.run(port=5001)
