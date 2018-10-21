@@ -1,6 +1,7 @@
 from flask_mongoalchemy import MongoAlchemy
 from movie import app
-from  movie.domain.movie import Movie
+from movie.domain.movie import Movie
+import jsonpickle
 
 
 db = MongoAlchemy(app)
@@ -22,7 +23,8 @@ class MovieRepository:
     def get(self, movie_id):
         if self.exists(movie_id):
             movie = Movies.query.filter_by(id=movie_id).first()
-            return Movie(movie_id=movie.id, name=movie.name, description=movie.description, length=movie.length)
+            return jsonpickle.encode(Movie(movie_id=movie.id, name=movie.name, description=movie.description,
+                                           length=movie.length))
         else:
             return None
 
