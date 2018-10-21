@@ -39,3 +39,12 @@ class MovieCreateResource(Resource):
         response.status_code = 201
         response.data = jsonpickle.encode(movie)
         return response
+
+
+class MovieListResource(Resource):
+    def get(self):
+        movies_list = repo.read_all()
+        response = app.make_response("")
+        response.status_code = 200
+        response.data = jsonpickle.encode(movies_list)
+        return response
