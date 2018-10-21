@@ -8,7 +8,7 @@ db = MongoAlchemy(app)
 
 
 class Seances(db.Document):
-    movie_id = db.ObjectId()
+    movie_id = db.ObjectIdField()
     date_time = db.StringField()
     seats = db.StringField()
 
@@ -42,17 +42,16 @@ class SeanceRepository:
     def delete(self, seance_id):
         if self.exists(seance_id):
             seance = Seances.query.get(seance_id)
-            Seances.delete(seance)
-            Seances.commit()
+            seance.remove()
 
     def get_a_seat(self, seance_id, seat_number):
         if self.exists(seance_id):
             seance = Seances.query.get(seance_id)
             seats = jsonpickle.decode(seance.seats)
-            if seats[seat_number]:
+            if len(seats)>=seat_number & seat_number>0 & seats[seat_number]:
                 seats[seat_number] = False
                 seance.seats = jsonpickle.encode(seats)
-                Seances.commit()
+                seance.save()
                 return True
             else:
                 return False

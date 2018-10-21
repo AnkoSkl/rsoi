@@ -35,7 +35,8 @@ class SeanceResource(Resource):
         repo.get_a_seat(seance_id, payload["seat_number"])
         seance = repo.get(seance_id)
         response = app.make_response("")
-        response.status_code = jsonpickle.encode(seance)
+        response.status_code = 201
+        response.data = jsonpickle.encode(seance)
         return response
 
 
