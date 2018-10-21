@@ -39,3 +39,12 @@ class TicketCreateResource(Resource):
         response.status_code = 201
         response.data = jsonpickle.encode(ticket)
         return response
+
+
+class TicketListResource(Resource):
+    def get(self):
+        ticket_list = repo.read_all()
+        response = app.make_response("")
+        response.status_code = 200
+        response.data = jsonpickle.encode(ticket_list)
+        return response
