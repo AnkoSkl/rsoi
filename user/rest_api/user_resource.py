@@ -39,3 +39,12 @@ class UserCreateResource(Resource):
         response.status_code = 201
         response.data = jsonpickle.encode(seance)
         return response
+
+
+class SeanceListResource(Resource):
+    def get(self):
+        users_list = repo.read_all()
+        response = app.make_response("")
+        response.status_code = 200
+        response.data = jsonpickle.encode(users_list)
+        return response
