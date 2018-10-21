@@ -29,6 +29,15 @@ class SeanceResource(Resource):
         response.status_code = 204
         return response
 
+    def patch(self, seance_id):
+        abort_if_seance_doesnt_exist(seance_id)
+        payload = jsonpickle.decode(flask.request.data)
+        repo.get_a_seat(seance_id, payload["seat_number"])
+        seance = repo.get(seance_id)
+        response = app.make_response("")
+        response.status_code = jsonpickle.encode(seance)
+        return response
+
 
 class SeanceCreateResource(Resource):
     def post(self):
@@ -47,4 +56,4 @@ class SeanceListResource(Resource):
         response = app.make_response("")
         response.status_code = 200
         response.data = jsonpickle.encode(seances_list)
-        return response        
+        return response
