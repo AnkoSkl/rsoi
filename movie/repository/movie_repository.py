@@ -1,7 +1,6 @@
 from flask_mongoalchemy import MongoAlchemy
 from movie import app
 from movie.domain.movie import Movie
-import jsonpickle
 
 
 db = MongoAlchemy(app)
@@ -17,7 +16,6 @@ class MovieRepository:
     def create(self, name, description, length):
         movie = Movies(name=name, description=description, length=length)
         movie.save()
-
         return movie.mongo_id
 
     def get(self, movie_id):
@@ -32,7 +30,8 @@ class MovieRepository:
         movies = []
         all_movies = Movies.query.all()
         for movie in all_movies:
-            movies.append(Movie(movie_id=movie.mongo_id, name=movie.name, description=movie.description, length=movie.length))
+            movies.append(Movie(movie_id=movie.mongo_id, name=movie.name, description=movie.description,
+                                length=movie.length))
         return movies
 
     def delete(self, movie_id):
