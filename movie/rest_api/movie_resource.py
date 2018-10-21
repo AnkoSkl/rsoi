@@ -28,3 +28,14 @@ class MovieResource(Resource):
         response = app.make_response("Movie %d deleted successfully" % movie_id)
         response.status_code = 204
         return response
+
+
+class MovieCreateResource(Resource):
+    def movie(self):
+        payload = jsonpickle.decode(flask.request.data)
+        movie_id = repo.create(payload["name"], payload["description"], payload["length"])
+        movie = repo.get(movie_id)
+        response = app.make_response("")
+        response.status_code = 201
+        response.data = jsonpickle.encode(movie)
+        return response
