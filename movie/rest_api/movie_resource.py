@@ -1,6 +1,8 @@
 from movie import app
 from flask_restful import Resource, abort, reqparse
 from movie.repository.movie_repository import MovieRepository
+import jsonpickle
+import flask
 
 
 repo = MovieRepository()
@@ -17,7 +19,7 @@ class MovieResource(Resource):
         movie = repo.get(movie_id)
         response = app.make_response("")
         response.status_code = 200
-        response.data = movie
+        response.data = jsonpickle.encode(movie)
         return response
 
     def delete(self, movie_id):
@@ -26,5 +28,3 @@ class MovieResource(Resource):
         response = app.make_response("Movie %d deleted successfully" % movie_id)
         response.status_code = 204
         return response
-
-
