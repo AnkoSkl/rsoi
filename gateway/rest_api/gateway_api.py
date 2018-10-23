@@ -31,14 +31,3 @@ class GatewayTicketResource(Resource):
         result = flask.Response(status=response.status_code, headers=response.headers.items(),
                                 response=response.content)
         return result
-
-
-class GatewayTicketListResource(Resource):
-    def get(self):
-        sess = requests.session()
-        for cookie in flask.request.cookies:
-            sess.cookies[cookie] = flask.request.cookies[cookie]
-        response = requests.get("http://127.0.0.1:5003/tickets")
-        result = flask.Response(status=response.status_code, headers=response.headers.items(),
-                                response=response.content)
-        return result
