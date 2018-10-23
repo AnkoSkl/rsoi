@@ -32,6 +32,14 @@ class TicketRepository:
                                   seat_number=ticket.seat_number))
         return tickets
 
+    def read_paginated(self, page_number, page_size):
+        tickets = []
+        tickets_paged = Tickets.query.paginate(page=page_number, per_page=page_size)
+        for ticket in tickets_paged.items:
+            tickets.append(Ticket(ticket_id=ticket.mongo_id, seance_id=ticket.seance_id,
+                                  seat_number=ticket.seat_number))
+        return tickets
+
     def delete(self, ticket_id):
         if self.exists(ticket_id):
             ticket = Tickets.query.get(ticket_id)
