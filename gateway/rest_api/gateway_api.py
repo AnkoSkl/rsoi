@@ -52,6 +52,15 @@ class GatewaySeanceResource(Resource):
                                 response=response.content)
         return result
 
+    def post(self, seance_id):
+        sess = requests.session()
+        for cookie in flask.request.cookies:
+            sess.cookies[cookie] = flask.request.cookies[cookie]
+        response = sess.patch("http://127.0.0.1:5002/seances/%s" % seance_id, data=flask.request.data)
+        result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                response=response.content)
+        return result
+
     def delete(self, seance_id):
         sess = requests.session()
         for cookie in flask.request.cookies:
