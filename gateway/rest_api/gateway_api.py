@@ -60,3 +60,15 @@ class GatewaySeanceResource(Resource):
         result = flask.Response(status=response.status_code, headers=response.headers.items(),
                                 response=response.content)
         return result
+
+
+class GatewaySeanceListResource(Resource):
+    def get(self):
+        sess = requests.session()
+        for cookie in flask.request.cookies:
+            sess.cookies[cookie] = flask.request.cookies[cookie]
+        response = sess.delete("http://127.0.0.1:5002/seances")
+        result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                response=response.content)
+        return result
+
