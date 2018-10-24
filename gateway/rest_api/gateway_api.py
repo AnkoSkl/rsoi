@@ -2,6 +2,7 @@ from flask_restful import Resource, reqparse
 import flask
 import jsonpickle
 import requests
+from ticket.domain.ticket import Ticket
 
 
 class GatewayTicketResource(Resource):
@@ -117,4 +118,29 @@ class GatewayUserCreateResource(Resource):
         response = sess.post("http://127.0.0.1:5004/users/create", data=flask.request.data)
         result = flask.Response(status=response.status_code, headers=response.headers.items(),
                                 response=response.content)
+        return result
+
+
+class GatewayBuyTicket(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument("seance_id", type=str)
+    parser.add_argument("seat_number", type=int)
+    user_id = "5bccca93af13c72e492d414c"
+
+
+    def post(self):
+        sess = requests.session()
+        args = self.parser.parse_args()
+        payload1 = ('seance_id', args['seance_id'])
+        payload2 = ('seat_number', args['seat_number'])
+        seance_id = jsonpickle.decode(payload1)
+        sess.patch("http://127.0.0.1:5002/seances/%s" % seance_id, payload2)
+
+        response = sess.post("http://127.0.0.1:5003/tickets/create", data=payload1)
+        result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                response=response.content)
+
+        ticket = jsonpickle.decode(result.data)
+        payload3 = jsonpickle.encode('ticket_id', ticket.ticket_id)
+        sess.patch("http://127.0.0.1:5004/users/%s" % self.user_id, payload3)
         return result
