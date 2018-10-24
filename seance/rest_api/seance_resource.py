@@ -32,10 +32,14 @@ class SeanceResource(Resource):
     def patch(self, seance_id):
         abort_if_seance_doesnt_exist(seance_id)
         payload = jsonpickle.decode(flask.request.data)
-        repo.get_a_seat(seance_id, payload["seat_number"])
+        res = repo.get_a_seat(seance_id, payload["seat_number"])
         seance = repo.get(seance_id)
-        response = app.make_response("")
-        response.status_code = 201
+        if res == True:
+            response = app.make_response("")
+            response.status_code = 201
+        else:
+            response = app.make_response("This seat is already busy!")
+            response.status_code = 301
         response.data = jsonpickle.encode(seance)
         return response
 
