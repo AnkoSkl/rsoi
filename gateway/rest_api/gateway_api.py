@@ -125,22 +125,27 @@ class GatewayBuyTicket(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument("seance_id", type=str)
     parser.add_argument("seat_number", type=int)
-    user_id = "5bccca93af13c72e492d414c"
+    user_id = "5bd0382aaf13c7b25ed8868a"
 
 
     def post(self):
+        payload = jsonpickle.decode(flask.request.data)
         sess = requests.session()
-        args = self.parser.parse_args()
-        payload1 = ('seance_id', args['seance_id'])
-        payload2 = ('seat_number', args['seat_number'])
-        seance_id = jsonpickle.decode(payload1)
-        sess.patch("http://127.0.0.1:5002/seances/%s" % seance_id, payload2)
+        #args = self.parser.parse_args()
+        #payload1 = ('seance_id', args['seance_id'])
+        #payload2 = ('seat_number', args['seat_number'])
+        #seance_id = payload1['seance_id']
+        #seance_id = payload["seance_id"]
+        payload1 = {'seat_number': payload["seat_number"]}
+        payload2 = {'seance_id': payload["seance_id"]}
+        sess.patch("http://127.0.0.1:5002/seances/%s" % payload["seance_id"], jsonpickle.encode(payload1))
 
-        response = sess.post("http://127.0.0.1:5003/tickets/create", data=payload1)
+        response = sess.post("http://127.0.0.1:5003/tickets/create", jsonpickle.encode(payload))
         result = flask.Response(status=response.status_code, headers=response.headers.items(),
                                 response=response.content)
 
-        ticket = jsonpickle.decode(result.data)
-        payload3 = jsonpickle.encode('ticket_id', ticket.ticket_id)
-        sess.patch("http://127.0.0.1:5004/users/%s" % self.user_id, payload3)
+        #ticket = jsonpickle.decode(response.content["py/object"])
+        ticket = jsonpickle.decode(response.content)
+        payload3 = {'ticket_id': str(ticket.id)}
+        sess.patch("http://127.0.0.1:5004/users/%s" % self.user_id, jsonpickle.encode(payload3))
         return result
