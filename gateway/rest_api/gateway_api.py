@@ -122,19 +122,16 @@ class GatewayUserCreateResource(Resource):
 
 
 class GatewayBuyTicket(Resource):
-    parser = reqparse.RequestParser()
-    parser.add_argument("seance_id", type=str)
-    parser.add_argument("seat_number", type=int)
-    user_id = "5bd0382aaf13c7b25ed8868a"
+    user_id = "5bd0a351af13c713737dae92"
 
     def post(self):
         payload = jsonpickle.decode(flask.request.data)
         sess = requests.session()
-        payload1 = {'seat_number': payload["seat_number"]}
+        payload1 = {'seat_number': payload["seat_number"], 'status': 'buy'}
         response = sess.patch("http://127.0.0.1:5002/seances/%s" % payload["seance_id"], jsonpickle.encode(payload1))
         result = flask.Response(status=response.status_code, headers=response.headers.items(),
                                 response=response.content)
-        if result.status != 201:
+        if result.status_code != 201:
             return result
 
         response = sess.post("http://127.0.0.1:5003/tickets/create", jsonpickle.encode(payload))
@@ -142,8 +139,26 @@ class GatewayBuyTicket(Resource):
                                 response=response.content)
 
         ticket = jsonpickle.decode(response.content)
-        payload3 = {'ticket_id': str(ticket.id)}
+        payload3 = {'ticket_id': str(ticket.id), 'status': 'buy'}
         sess.patch("http://127.0.0.1:5004/users/%s" % self.user_id, jsonpickle.encode(payload3))
         return result
 
 
+class GatewayReturnTicket(Resource):
+    user_id = "5bd0a351af13c713737dae92"
+
+    def post(self, ticket_id):
+        sess = requests.session()
+        response = sess.get("http://127.0.0.1:5003/tickets/%s" % ticket_id)
+
+        ticket = jsonpickle.decode(response.content)
+        payload1 = {'seat_number': ticket.seat_number, 'status': 'release'}
+        sess.patch("http://127.0.0.1:5002/seances/%s" % ticket.seance_id, jsonpickle.encode(payload1))
+
+        payload3 = {'ticket_id': ticket_id, 'status': 'release'}
+        sess.patch("http://127.0.0.1:5004/users/%s" % self.user_id, jsonpickle.encode(payload3))
+
+        response = sess.delete("http://127.0.0.1:5003/tickets/%s" % ticket_id)
+        result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                response=response.content)
+        return result

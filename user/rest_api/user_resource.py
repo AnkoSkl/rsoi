@@ -25,14 +25,17 @@ class UserResource(Resource):
     def delete(self, user_id):
         abort_if_seance_doesnt_exist(user_id)
         repo.delete(user_id)
-        response = app.make_response("User %d deleted successfully" % user_id)
+        response = app.make_response("User %s deleted successfully" % user_id)
         response.status_code = 204
         return response
 
     def patch(self, user_id):
         abort_if_seance_doesnt_exist(user_id)
         payload = jsonpickle.decode(flask.request.data)
-        repo.assign_ticket(user_id, payload["ticket_id"])
+        if payload["status"] == "buy":
+            repo.assign_ticket(user_id, payload["ticket_id"])
+        else:
+            repo.remove_ticket(user_id, payload["ticket_id"])
         user = repo.get(user_id)
         responce = app.make_response("")
         responce.status_code = 201

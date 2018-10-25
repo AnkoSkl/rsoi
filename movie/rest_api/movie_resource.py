@@ -25,7 +25,7 @@ class MovieResource(Resource):
     def delete(self, movie_id):
         abort_if_movie_doesnt_exist(movie_id)
         repo.delete(movie_id)
-        response = app.make_response("Movie %d deleted successfully" % movie_id)
+        response = app.make_response("Movie %s deleted successfully" % movie_id)
         response.status_code = 204
         return response
 

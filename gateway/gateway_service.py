@@ -6,6 +6,7 @@ from gateway.rest_api.gateway_api import *
 api = Api(app)
 
 api.add_resource(GatewayBuyTicket, "/gateway/api/buy_ticket")
+api.add_resource(GatewayReturnTicket, "/gateway/api/return_ticket" + "/<ticket_id>")
 api.add_resource(GatewayTicketResource, "/gateway/api/tickets" + "/<ticket_id>")
 api.add_resource(GatewayTicketCreateResource, "/gateway/api/tickets/create")
 api.add_resource(GatewaySeanceResource, "/gateway/api/seances" + "/<seance_id>")

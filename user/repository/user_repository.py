@@ -53,6 +53,16 @@ class UserRepository:
             return True
         return False
 
+    def remove_ticket(self, user_id, ticket_id):
+        if self.exists(user_id):
+            user = Users.query.get(user_id)
+            ticket_ids = jsonpickle.decode(user.ticket_ids)
+            ticket_ids.remove(ticket_id)
+            user.ticket_ids = jsonpickle.encode(ticket_ids)
+            user.save()
+            return True
+        return False
+
     def exists(self, user_id):
         result = Users.query.get(user_id)
         return result is not None

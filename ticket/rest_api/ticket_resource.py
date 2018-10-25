@@ -25,7 +25,7 @@ class TicketResource(Resource):
     def delete(self, ticket_id):
         abort_if_seance_doesnt_exist(ticket_id)
         repo.delete(ticket_id)
-        response = app.make_response("Ticket %d deleted successfully" % ticket_id)
+        response = app.make_response("Ticket %s deleted successfully" % ticket_id)
         response.status_code = 204
         return response
 

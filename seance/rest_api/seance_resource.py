@@ -25,21 +25,31 @@ class SeanceResource(Resource):
     def delete(self, seance_id):
         abort_if_seance_doesnt_exist(seance_id)
         repo.delete(seance_id)
-        response = app.make_response("Seance %d deleted successfully" % seance_id)
+        response = app.make_response("Seance %s deleted successfully" % seance_id)
         response.status_code = 204
         return response
 
     def patch(self, seance_id):
         abort_if_seance_doesnt_exist(seance_id)
         payload = jsonpickle.decode(flask.request.data)
-        res = repo.get_a_seat(seance_id, payload["seat_number"])
-        seance = repo.get(seance_id)
-        if res == True:
-            response = app.make_response("")
-            response.status_code = 201
+        if payload["status"] == "buy":
+            res = repo.get_a_seat(seance_id, payload["seat_number"])
+            if res == True:
+                response = app.make_response("")
+                response.status_code = 201
+            else:
+                response = app.make_response("This seat cannot be bought!")
+                response.status_code = 301
         else:
-            response = app.make_response("This seat is already busy!")
-            response.status_code = 301
+            res = repo.free_a_seat(seance_id, payload["seat_number"])
+            if res == True:
+                response = app.make_response("")
+                response.status_code = 201
+            else:
+                response = app.make_response("This seat cannot be released!")
+                response.status_code = 301
+
+        seance = repo.get(seance_id)
         response.data = jsonpickle.encode(seance)
         return response
 

@@ -48,7 +48,7 @@ class SeanceRepository:
         if self.exists(seance_id):
             seance = Seances.query.get(seance_id)
             seats = jsonpickle.decode(seance.seats)
-            if len(seats) >= seat_number & seat_number > 0 & seats[seat_number-1] == True: #переделать!
+            if len(seats) >= seat_number & seat_number > 0 & (seats[seat_number-1] == True): #переделать!
                 seats[seat_number-1] = False
                 seance.seats = jsonpickle.encode(seats)
                 seance.save()
@@ -58,6 +58,19 @@ class SeanceRepository:
         else:
             return None
 
+    def free_a_seat(self, seance_id, seat_number):
+        if self.exists(seance_id):
+            seance = Seances.query.get(seance_id)
+            seats = jsonpickle.decode(seance.seats)
+            if len(seats) >= seat_number & seat_number > 0 & seats[seat_number - 1] == False:
+                seats[seat_number-1] = True
+                seance.seats = jsonpickle.encode(seats)
+                seance.save()
+                return True
+            else:
+                return False
+        else:
+            return None
 
     def exists(self, seance_id):
         result = Seances.query.get(seance_id)
