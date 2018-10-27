@@ -66,8 +66,14 @@ class SeanceCreateResource(Resource):
 
 
 class SeanceListResource(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument("page", type=int, default=1)
+    parser.add_argument("page_size", type=int, default=5)
+
     def get(self):
-        seances_list = repo.read_all()
+        args = self.parser.parse_args(strict=True)
+        #seances_list = repo.read_all()
+        seances_list = repo.read_paginated(page_number=args['page'], page_size=args['page_size'])
         response = app.make_response("")
         response.status_code = 200
         response.data = jsonpickle.encode(seances_list)

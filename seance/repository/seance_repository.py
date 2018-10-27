@@ -39,6 +39,15 @@ class SeanceRepository:
                                   seats=seats))
         return seances
 
+    def read_paginated(self, page_number, page_size):
+        seances = []
+        seances_paginated = Seances.query.paginate(page=page_number, per_page=page_size)
+        for seance in seances_paginated.items:
+            seats = jsonpickle.decode(seance.seats)
+            seances.append(Seance(seance_id=seance.mongo_id, movie_id=seance.movie_id, date_time=seance.date_time,
+                                  seats=seats))
+        return seances
+
     def delete(self, seance_id):
         if self.exists(seance_id):
             seance = Seances.query.get(seance_id)
