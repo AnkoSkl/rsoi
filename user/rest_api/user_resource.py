@@ -7,11 +7,6 @@ import flask
 
 repo = UserRepository()
 
-#app.logger.error('aaaaaaaaaaaaaaa')
-#app.logger.warning('aaaaaaaaaaaaaaa')
-#app.logger.debug('aaaaaaaaaaaaaaa')
-#app.logger.info('aaaaaaaaaaaaaaa')
-
 def abort_if_user_doesnt_exist(user_id):
     if not repo.exists(user_id):
         app.logger.error('Пользователя с идентификатором %s не существует!', user_id)
@@ -84,7 +79,7 @@ class UserListResource(Resource):
         app.logger.info('Получен запрос на получение списка пользователей')
         args = self.parser.parse_args(strict=True)
         #users_list = repo.read_all()
-        app.logger.info('Номер страницы: %d; количество пользователей: %d' % (args['page'], args['page_size']))
+        app.logger.info('Номер страницы: %d; количество пользователей на странице: %d' % (args['page'], args['page_size']))
         users_list = repo.read_paginated(page_number=args['page'], page_size=args['page_size'])
         response = app.make_response("")
         response.status_code = 200
