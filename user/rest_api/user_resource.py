@@ -60,7 +60,9 @@ class UserListResource(Resource):
     parser.add_argument("page_size", type=int, default=5)
 
     def get(self):
-        users_list = repo.read_all()
+        args = self.parser.parse_args(strict=True)
+        #users_list = repo.read_all()
+        users_list = repo.read_paginated(page_number=args['page'], page_size=args['page_size'])
         response = app.make_response("")
         response.status_code = 200
         response.data = jsonpickle.encode(users_list)
