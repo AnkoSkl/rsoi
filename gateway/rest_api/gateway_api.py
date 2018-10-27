@@ -28,6 +28,22 @@ class GatewayTicketCreateResource(Resource):
         return result
 
 
+class GatewayTicketListResource(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument("page", type=int)
+    parser.add_argument("page_size", type=int)
+
+    def get(self):
+        args = self.parser.parse_args(strict=True)
+        page = args['page']
+        page_size = args['page_size']
+        payload = (('page', page), ('page_size', page_size))
+        response = requests.get("http://127.0.0.1:5003/tickets", params=payload)
+        result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                response=response.content)
+        return result
+
+
 class GatewaySeanceResource(Resource):
     def get(self, seance_id):
         response_seance = requests.get("http://127.0.0.1:5002/seances/%s" % seance_id)
@@ -101,6 +117,22 @@ class GatewayMovieCreateResource(Resource):
         return result
 
 
+class GatewayMovieListResource(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument("page", type=int)
+    parser.add_argument("page_size", type=int)
+
+    def get(self):
+        args = self.parser.parse_args(strict=True)
+        page = args['page']
+        page_size = args['page_size']
+        payload = (('page', page), ('page_size', page_size))
+        response = requests.get("http://127.0.0.1:5001/movies", params=payload)
+        result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                response=response.content)
+        return result
+
+
 class GatewayUserResource(Resource):
     def get(self, user_id):
         response = requests.get("http://127.0.0.1:5004/users/%s" % user_id)
@@ -118,6 +150,22 @@ class GatewayUserResource(Resource):
 class GatewayUserCreateResource(Resource):
     def post(self):
         response = requests.post("http://127.0.0.1:5004/users/create", data=flask.request.data)
+        result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                response=response.content)
+        return result
+
+
+class GatewayUserListResource(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument("page", type=int)
+    parser.add_argument("page_size", type=int)
+
+    def get(self):
+        args = self.parser.parse_args(strict=True)
+        page = args['page']
+        page_size = args['page_size']
+        payload = (('page', page), ('page_size', page_size))
+        response = requests.get("http://127.0.0.1:5004/users", params=payload)
         result = flask.Response(status=response.status_code, headers=response.headers.items(),
                                 response=response.content)
         return result
