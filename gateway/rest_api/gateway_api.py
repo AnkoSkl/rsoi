@@ -65,7 +65,7 @@ class GatewaySeanceCreateResource(Resource):
 class GatewaySeanceListResource(Resource):
     def get(self):
         sess = requests.session()
-        response = sess.delete("http://127.0.0.1:5002/seances")
+        response = sess.get("http://127.0.0.1:5002/seances")
         result = flask.Response(status=response.status_code, headers=response.headers.items(),
                                 response=response.content)
         return result
