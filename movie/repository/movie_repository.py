@@ -34,6 +34,14 @@ class MovieRepository:
                                 length=movie.length))
         return movies
 
+    def read_paginated(self, page_number, page_size):
+        movies = []
+        movies_paginated = Movies.query.paginate(page=page_number, per_page=page_size)
+        for movie in movies_paginated.items:
+            movies.append(Movie(movie_id=movie.mongo_id, name=movie.name, description=movie.description,
+                                length=movie.length))
+        return movies
+
     def delete(self, movie_id):
         if self.exists(movie_id):
             movie = Movies.query.get(movie_id)

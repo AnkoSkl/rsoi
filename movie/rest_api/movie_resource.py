@@ -42,8 +42,14 @@ class MovieCreateResource(Resource):
 
 
 class MovieListResource(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument("page", type=int, default=1)
+    parser.add_argument("page_size", type=int, default=5)
+
     def get(self):
-        movies_list = repo.read_all()
+        args = self.parser.parse_args(strict=True)
+        #movies_list = repo.read_all()
+        movies_list = repo.read_paginated(page_number=args['page'], page_size=args['page_size'])
         response = app.make_response("")
         response.status_code = 200
         response.data = jsonpickle.encode(movies_list)
