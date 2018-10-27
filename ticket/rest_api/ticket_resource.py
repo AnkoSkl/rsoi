@@ -10,7 +10,7 @@ repo = TicketRepository()
 
 def abort_if_seance_doesnt_exist(ticket_id):
     if not repo.exists(ticket_id):
-        app.logger.error('Билета с идентификатором %s не существует!', user_id)
+        app.logger.error('Билета с идентификатором %s не существует!', ticket_id)
         abort(404, message="Ticket {} doesn't exist".format(ticket_id))
 
 
