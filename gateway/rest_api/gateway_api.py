@@ -64,8 +64,16 @@ class GatewaySeanceCreateResource(Resource):
 
 
 class GatewaySeanceListResource(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument("page", type=int)
+    parser.add_argument("page_size", type=int)
+
     def get(self):
-        response = requests.get("http://127.0.0.1:5002/seances")
+        args = self.parser.parse_args(strict=True)
+        page = args['page']
+        page_size = args['page_size']
+        payload = (('page', page), ('page_size', page_size))
+        response = requests.get("http://127.0.0.1:5002/seances", params=payload)
         result = flask.Response(status=response.status_code, headers=response.headers.items(),
                                 response=response.content)
         return result
