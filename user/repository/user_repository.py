@@ -37,6 +37,15 @@ class UserRepository:
                               password=user.password))
         return users
 
+    def read_paginated(self, page_number, page_size):
+        users = []
+        users_paged = Users.query.paginate(page=page_number, per_page=page_size)
+        for user in users_paged:
+            ticket_ids = jsonpickle.decode(user.ticket_ids)
+            users.append(User(user_id=user.mongo_id, ticket_ids=ticket_ids, name=user.name,
+                              password=user.password))
+        return users
+
     def delete(self, user_id):
         if self.exists(user_id):
             user = Users.query.get(user_id)

@@ -55,6 +55,10 @@ class UserCreateResource(Resource):
 
 
 class UserListResource(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument("page", type=int, default=1)
+    parser.add_argument("page_size", type=int, default=5)
+
     def get(self):
         users_list = repo.read_all()
         response = app.make_response("")
