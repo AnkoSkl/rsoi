@@ -60,7 +60,7 @@ class SeanceResource(Resource):
             else:
                 response = app.make_response("This seat cannot be released!")
                 response.status_code = 301
-                app.logger.info('Возврат билета на сеанс %s не может быть завершен, так как место еще не занято'
+                app.logger.warning('Возврат билета на сеанс %s не может быть завершен, так как место еще не занято'
                                 % seance_id)
 
         seance = repo.get(seance_id)

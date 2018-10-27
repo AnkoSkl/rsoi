@@ -32,7 +32,7 @@ class TicketResource(Resource):
         repo.delete(ticket_id)
         response = app.make_response("Ticket %s deleted successfully" % ticket_id)
         response.status_code = 204
-        app.logger.info('Пользователь с идентификатором %s успешно удален' % ticket_id)
+        app.logger.info('Билет с идентификатором %s успешно удален' % ticket_id)
         return response
 
 

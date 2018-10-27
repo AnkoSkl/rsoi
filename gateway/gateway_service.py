@@ -22,4 +22,4 @@ api.add_resource(GatewayUserCreateResource, "/gateway/api/users/create")
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
