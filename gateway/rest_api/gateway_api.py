@@ -79,30 +79,6 @@ class GatewaySeanceResource(Resource):
                         % seance_id)
         return result
 
-    def patch(self, seance_id):
-        app.logger.info('Получен запрос на покупку/возврат билета на сеанс с идентификатором %s' % seance_id)
-        response = requests.patch(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
-                                  "/%s" % seance_id, data=flask.request.data)
-        result = flask.Response(status=response.status_code, headers=response.headers.items(),
-                                response=response.content)
-        if response.status_code == 201:
-            app.logger.info('Покупка/возврат билета на сеанс %s успешно завершен(а)' % seance_id)
-        else:
-            app.logger.warning('Покупка/возврат билета на сеанс %s не может быть завершен(а)' % seance_id)
-        return result
-
-    def delete(self, seance_id):
-        app.logger.info('Получен запрос на удаление сеанса с идентификатором %s' % seance_id)
-        response = requests.delete(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
-                                   "/%s" % seance_id)
-        result = flask.Response(status=response.status_code, headers=response.headers.items(),
-                                response=response.content)
-        if response.status_code == 204:
-            app.logger.info('Сеанс с идентификатором %s успешно удален' % seance_id)
-        else:
-            app.logger.warning('Сеанс с идентификатором %s не может быть удален' % seance_id)
-        return result
-
 
 class GatewaySeanceCreateResource(Resource):
     def post(self):
@@ -216,32 +192,6 @@ class GatewayUserResource(Resource):
             app.logger.warning('Информация о пользователе с идентификатором %s не может быть получена' % user_id)
         return result
 
-    def delete(self, user_id):
-        app.logger.info('Получен запрос на удаление пользователя с идентификатором %s' % user_id)
-        response = requests.delete(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
-                                   "/%s" % user_id)
-        result = flask.Response(status=response.status_code, headers=response.headers.items(),
-                                response=response.content)
-        if response.status_code == 204:
-            app.logger.info('Пользователь с идентификатором %s успешно удален' % user_id)
-        else:
-            app.logger.warning('Пользователь с идентификатором %s не может быть удален' % user_id)
-        return result
-
-
-class GatewayUserCreateResource(Resource):
-    def post(self):
-        app.logger.info('Получен запрос на создание пользователя')
-        response = requests.post(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
-                                 current_config.CREATE_PATH, data=flask.request.data)
-        result = flask.Response(status=response.status_code, headers=response.headers.items(),
-                                response=response.content)
-        if response.status_code == 201:
-            app.logger.info('Пользователь успешно создан')
-        else:
-            app.logger.warning('Пользователь не может быть создан')
-        return result
-
 
 class GatewayUserListResource(Resource):
     parser = reqparse.RequestParser()
@@ -289,7 +239,7 @@ class GatewayBuyTicket(Resource):
                                  current_config.CREATE_PATH, jsonpickle.encode(payload))
         ticket = jsonpickle.decode(response.content)
         if response.status_code == 201:
-            app.logger.info('Бмлет с идентификатором %s успешно создан' % str(ticket.id))
+            app.logger.info('Билет с идентификатором %s успешно создан' % str(ticket.id))
         else:
             app.logger.warning('Билет не может быть создан')
             result = flask.Response(status=response.status_code, headers=response.headers.items(),
@@ -352,7 +302,7 @@ class GatewayReturnTicket(Resource):
                                    "/%s" % ticket_id)
         result = flask.Response(status=response.status_code, headers=response.headers.items(),
                                 response=response.content)
-        if response.status_code == 201:
+        if response.status_code == 204:
             app.logger.info('Билет с идентификатором %s успешно удален' % ticket_id)
         else:
             app.logger.warning('Билет с идентификатором %s не может быть удален' % ticket_id)
