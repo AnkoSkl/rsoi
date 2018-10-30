@@ -21,32 +21,6 @@ class GatewayTicketResource(Resource):
             app.logger.warning('Информация о билете с идентификатором %s не может быть получена' % ticket_id)
         return result
 
-    def delete(self, ticket_id):
-        app.logger.info('Получен запрос на удаление билета с идентификатором %s' % ticket_id)
-        response = requests.delete(current_config.TICKET_SERVICE_URL + current_config.TICKET_SERVICE_PATH +
-                                   "/%s" % ticket_id)
-        result = flask.Response(status=response.status_code, headers=response.headers.items(),
-                                response=response.content)
-        if response.status_code == 204:
-            app.logger.info('Билет с идентификатором %s успещно удален' % ticket_id)
-        else:
-            app.logger.warning('Билет с идентификатором %s не может быть удален' % ticket_id)
-        return result
-
-
-class GatewayTicketCreateResource(Resource):
-    def post(self):
-        app.logger.info('Получен запрос на создание билета')
-        response = requests.post(current_config.TICKET_SERVICE_URL + current_config.TICKET_SERVICE_PATH +
-                                 current_config.CREATE_PATH, data=flask.request.data)
-        result = flask.Response(status=response.status_code, headers=response.headers.items(),
-                                response=response.content)
-        if response.status_code == 201:
-            app.logger.info('Билет успещно создан')
-        else:
-            app.logger.warning('Билет не может быть создан')
-        return result
-
 
 class GatewayTicketListResource(Resource):
     parser = reqparse.RequestParser()
