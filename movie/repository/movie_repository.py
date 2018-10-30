@@ -26,14 +26,6 @@ class MovieRepository:
         else:
             return None
 
-    def read_all(self):
-        movies = []
-        all_movies = Movies.query.all()
-        for movie in all_movies:
-            movies.append(Movie(movie_id=movie.mongo_id, name=movie.name, description=movie.description,
-                                length=movie.length))
-        return movies
-
     def read_paginated(self, page_number, page_size):
         movies = []
         movies_paginated = Movies.query.paginate(page=page_number, per_page=page_size)
