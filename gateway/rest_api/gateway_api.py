@@ -262,7 +262,7 @@ class GatewayBuyTicket(Resource):
 class GatewayReturnTicket(Resource):
     user_id = "5bd0a351af13c713737dae92"
 
-    def post(self, ticket_id):
+    def delete(self, ticket_id):
         app.logger.info('Получен запрос на возврат билета')
         response = requests.get(current_config.TICKET_SERVICE_URL + current_config.TICKET_SERVICE_PATH +
                                 "/%s" % ticket_id)

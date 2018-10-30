@@ -170,12 +170,12 @@ class TestGatewayBuyTicket(unittest.TestCase):
 
 class TestGatewayReturnTicket(unittest.TestCase):
     def test_post_right(self):
-        res = requests.post(current_config.GATEWAY_URL + current_config.GATEWAY_PATH +
+        res = requests.delete(current_config.GATEWAY_URL + current_config.GATEWAY_PATH +
                             '/return_ticket/5bd8a022af13c7ea848cb9de')
         self.assertEqual(res.status_code, 204)
 
     def test_post_error(self):
-        res = requests.post(current_config.GATEWAY_URL + current_config.GATEWAY_PATH +
+        res = requests.delete(current_config.GATEWAY_URL + current_config.GATEWAY_PATH +
                             '/return_ticket/5bd8a540af13')
         self.assertNotEqual(res.status_code, 204)
 
