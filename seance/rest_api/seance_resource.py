@@ -39,7 +39,7 @@ class SeanceResource(Resource):
         abort_if_seance_doesnt_exist(seance_id)
         payload = jsonpickle.decode(flask.request.data)
         if payload["status"] == "buy":
-            app.logger.info('Покупка билета с идентификатором %s' % payload["ticket_id"])
+            app.logger.info('Покупка билета')
             res = repo.get_a_seat(seance_id, payload["seat_number"])
             if res == True:
                 response = app.make_response("")
@@ -51,7 +51,7 @@ class SeanceResource(Resource):
                 app.logger.warning('Выбранное место на сеанс %s занято, покупка билета не может быть завершена'
                                    % seance_id)
         else:
-            app.logger.info('Возврат билета с идентификатором %s' % payload["ticket_id"])
+            app.logger.info('Возврат билета')
             res = repo.free_a_seat(seance_id, payload["seat_number"])
             if res == True:
                 response = app.make_response("")

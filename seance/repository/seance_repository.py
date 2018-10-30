@@ -57,7 +57,7 @@ class SeanceRepository:
         if self.exists(seance_id):
             seance = Seances.query.get(seance_id)
             seats = jsonpickle.decode(seance.seats)
-            if len(seats) >= seat_number & seat_number > 0 & (seats[seat_number-1] == True): #переделать!
+            if (len(seats) >= seat_number) and (seat_number > 0) and (seats[seat_number-1] == True):
                 seats[seat_number-1] = False
                 seance.seats = jsonpickle.encode(seats)
                 seance.save()
