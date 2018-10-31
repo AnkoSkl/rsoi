@@ -30,15 +30,6 @@ class SeanceRepository:
         else:
             return None
 
-    def read_all(self):
-        seances = []
-        all_seances = Seances.query.all()
-        for seance in all_seances:
-            seats = jsonpickle.decode(seance.seats)
-            seances.append(Seance(seance_id=seance.mongo_id, movie_id=seance.movie_id, date_time=seance.date_time,
-                                  seats=seats))
-        return seances
-
     def read_paginated(self, page_number, page_size):
         seances = []
         seances_paginated = Seances.query.paginate(page=page_number, per_page=page_size)
@@ -71,7 +62,7 @@ class SeanceRepository:
         if self.exists(seance_id):
             seance = Seances.query.get(seance_id)
             seats = jsonpickle.decode(seance.seats)
-            if len(seats) >= seat_number & seat_number > 0 & seats[seat_number - 1] == False:
+            if (len(seats) >= seat_number) and (seat_number > 0) and (seats[seat_number - 1] == False):
                 seats[seat_number-1] = True
                 seance.seats = jsonpickle.encode(seats)
                 seance.save()
