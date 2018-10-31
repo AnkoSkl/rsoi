@@ -28,15 +28,6 @@ class UserRepository:
         else:
             return None
 
-    def read_all(self):
-        users = []
-        all_users = Users.query.all()
-        for user in all_users:
-            ticket_ids = jsonpickle.decode(user.ticket_ids)
-            users.append(User(user_id=user.mongo_id, ticket_ids=ticket_ids, name=user.name,
-                              password=user.password))
-        return users
-
     def read_paginated(self, page_number, page_size):
         users = []
         users_paged = Users.query.paginate(page=page_number, per_page=page_size)

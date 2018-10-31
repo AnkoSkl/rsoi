@@ -18,11 +18,6 @@ class TestMovieRepository(unittest.TestCase):
         movie2 = Movie(movie_id=fields.ObjectId('5bd89b59af13c757e1b7f3fd'), name='test', description='test', length=30)
         self.assertEqual(movie1, movie2)
 
-    def test_get_error(self):
-        rep = MovieRepository()
-        movie = rep.get('5bd89b59af1')
-        self.assertIsNone(movie)
-
     def test_get_none(self):
         rep = MovieRepository()
         movie = rep.get('5bd8ad')
