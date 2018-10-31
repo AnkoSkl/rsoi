@@ -4,6 +4,17 @@ import requests
 import jsonpickle
 
 
+class TestTicketCreateResource(unittest.TestCase):
+    def test_post(self):
+        payload = {'seance_id': '5bd897f8af13c78fe908cb98', 'seat_number': 2}
+        res = requests.post(current_config.TICKET_SERVICE_URL + current_config.TICKET_SERVICE_PATH +
+                            current_config.CREATE_PATH, data=jsonpickle.encode(payload))
+        self.assertEqual(res.status_code, 201)
+        ticket = jsonpickle.decode(res.content)
+        requests.delete(current_config.TICKET_SERVICE_URL + current_config.TICKET_SERVICE_PATH +
+                        "/%s" % str(ticket.id))
+
+
 class TestTicketResource(unittest.TestCase):
     def test_get_right(self):
         res = requests.get(current_config.TICKET_SERVICE_URL + current_config.TICKET_SERVICE_PATH +
@@ -15,22 +26,14 @@ class TestTicketResource(unittest.TestCase):
                            "/5bd0a351")
         self.assertEqual(res.status_code, 404)
 
-    """
     def test_delete_right(self):
-        res = requests.delete(current_config.TICKET_SERVICE_URL + current_config.TICKET_SERVICE_PATH +
-                           "/5bd9d92faf13c78bda291896")
-        self.assertEqual(res.status_code, 204)
-    """
-
-
-"""
-class TestTicketCreateResource(unittest.TestCase):
-    def test_post(self):
         payload = {'seance_id': '5bd897f8af13c78fe908cb98', 'seat_number': 2}
         res = requests.post(current_config.TICKET_SERVICE_URL + current_config.TICKET_SERVICE_PATH +
                             current_config.CREATE_PATH, data=jsonpickle.encode(payload))
-        self.assertEqual(res.status_code, 201)
-"""
+        ticket = jsonpickle.decode(res.content)
+        res = requests.delete(current_config.TICKET_SERVICE_URL + current_config.TICKET_SERVICE_PATH +
+                              "/%s" % ticket.id)
+        self.assertEqual(res.status_code, 204)
 
 
 class TestSeanceListResource(unittest.TestCase):

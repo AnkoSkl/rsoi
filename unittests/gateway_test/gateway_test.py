@@ -1,6 +1,5 @@
 import unittest
 import requests
-from ticket.domain.ticket import Ticket
 from gateway.config import current_config
 import jsonpickle
 
@@ -42,7 +41,7 @@ class TestGatewaySeanceResource(unittest.TestCase):
                             + "/5bd0aa41af13")
         self.assertNotEqual(res.status_code, 200)
 
-"""
+
 class TestGatewaySeanceCreateResource(unittest.TestCase):
     def test_post_right(self):
         payload = {'movie_id': '5bd0a513af13c7251f913dd9', 'datetime': '22.11.2018_10:15', 'number_of_seats':100}
@@ -50,6 +49,9 @@ class TestGatewaySeanceCreateResource(unittest.TestCase):
                             current_config.SEANCE_SERVICE_PATH + current_config.CREATE_PATH,
                             data=jsonpickle.encode(payload))
         self.assertEqual(res.status_code, 201)
+        seance = jsonpickle.decode(res.content)
+        requests.delete(current_config.GATEWAY_URL + current_config.GATEWAY_PATH + current_config.SEANCE_SERVICE_PATH +
+                        "/%s" % str(seance.id))
 
     def test_post_error(self):
         payload = {'movie_id': '5bd0a513af13c7251f913dd9', 'datetime': '22.11.2018_10:15', 'number_of_seats':'100'}
@@ -57,7 +59,7 @@ class TestGatewaySeanceCreateResource(unittest.TestCase):
                             current_config.TICKET_SERVICE_PATH + current_config.CREATE_PATH,
                             data=jsonpickle.encode(payload))
         self.assertNotEqual(res.status_code, 201)
-"""
+
 
 class TestGatewaySeanceListResource(unittest.TestCase):
     def test_get_right(self):
@@ -69,7 +71,7 @@ class TestGatewaySeanceListResource(unittest.TestCase):
     def test_get_error(self):
         payload = (('page', 0), ('page_size', 5))
         res = requests.get(current_config.GATEWAY_URL + current_config.GATEWAY_PATH +
-                            current_config.SEANCE_SERVICE_PATH, params=payload)
+                           current_config.SEANCE_SERVICE_PATH, params=payload)
         self.assertNotEqual(res.status_code, 200)
 
 
@@ -84,15 +86,19 @@ class TestGatewayMovieResource(unittest.TestCase):
                            + "/5bd0a513")
         self.assertNotEqual(res.status_code, 200)
 
-"""
     def test_delete_right(self):
+        payload = {'name': 'test', 'description': 'test', 'length': 30}
+        res = requests.post(current_config.GATEWAY_URL + current_config.GATEWAY_PATH +
+                            current_config.MOVIE_SERVICE_PATH + current_config.CREATE_PATH,
+                            data=jsonpickle.encode(payload))
+        movie = jsonpickle.decode(res.content)
         res = requests.delete(current_config.GATEWAY_URL + current_config.GATEWAY_PATH +
-                              current_config.MOVIE_SERVICE_PATH+ "/5bd89b13af13c757e1b7f3fc")
+                              current_config.MOVIE_SERVICE_PATH + "/%s" % str(movie.id))
         self.assertEqual(res.status_code, 204)
 
     def test_delete_error(self):
         res = requests.delete(current_config.GATEWAY_URL + current_config.GATEWAY_PATH +
-                              current_config.MOVIE_SERVICE_PATH+ "/0")
+                              current_config.MOVIE_SERVICE_PATH + "/0")
         self.assertNotEqual(res.status_code, 204)
 
 
@@ -103,6 +109,9 @@ class TestGatewayMovieCreateResource(unittest.TestCase):
                             current_config.MOVIE_SERVICE_PATH + current_config.CREATE_PATH,
                             data=jsonpickle.encode(payload))
         self.assertEqual(res.status_code, 201)
+        movie = jsonpickle.decode(res.content)
+        requests.delete(current_config.GATEWAY_URL + current_config.GATEWAY_PATH + current_config.MOVIE_SERVICE_PATH +
+                        "/%s" % str(movie.id))
 
     def test_post_error(self):
         payload = {'name': 'test', 'description': 'test', 'length': "0"}
@@ -110,7 +119,6 @@ class TestGatewayMovieCreateResource(unittest.TestCase):
                             current_config.MOVIE_SERVICE_PATH + current_config.CREATE_PATH,
                             data=jsonpickle.encode(payload))
         self.assertNotEqual(res.status_code, 201)
-"""
 
 
 class TestGatewayMovieListResource(unittest.TestCase):
@@ -135,7 +143,7 @@ class TestGatewayUserResource(unittest.TestCase):
 
     def test_get_with_error(self):
         res = requests.get(current_config.GATEWAY_URL + current_config.GATEWAY_PATH + current_config.USER_SERVICE_PATH
-            + "/5bd0")
+                           + "/5bd0")
         self.assertNotEqual(res.status_code, 200)
 
 
@@ -152,31 +160,37 @@ class TestGatewayUserListResource(unittest.TestCase):
                            current_config.USER_SERVICE_PATH, params=payload)
         self.assertNotEqual(res.status_code, 200)
 
-"""
+
 class TestGatewayBuyTicket(unittest.TestCase):
     def test_post_right(self):
         payload = {'seance_id': '5bd897f8af13c78fe908cb98', 'seat_number': 7}
         res = requests.post(current_config.GATEWAY_URL + current_config.GATEWAY_PATH + '/buy_ticket',
                             data=jsonpickle.encode(payload))
         self.assertEqual(res.status_code, 201)
+        ticket = jsonpickle.decode(res.content)
+        requests.delete(current_config.GATEWAY_URL + current_config.GATEWAY_PATH +
+                        '/return_ticket/%s' % str(ticket.id))
 
     def test_post_error(self):
         payload = {'seance_id': '5bd897f8af13c78fe908cb98', 'seat_number': 2}
         res = requests.post(current_config.GATEWAY_URL + current_config.GATEWAY_PATH + '/buy_ticket',
                             data=jsonpickle.encode(payload))
         self.assertNotEqual(res.status_code, 201)
-"""
 
 
 class TestGatewayReturnTicket(unittest.TestCase):
-    def test_post_right(self):
+    def test_delete_right(self):
+        payload = {'seance_id': '5bd897f8af13c78fe908cb98', 'seat_number': 7}
+        res = requests.post(current_config.GATEWAY_URL + current_config.GATEWAY_PATH + '/buy_ticket',
+                            data=jsonpickle.encode(payload))
+        ticket = jsonpickle.decode(res.content)
         res = requests.delete(current_config.GATEWAY_URL + current_config.GATEWAY_PATH +
-                            '/return_ticket/5bd8a022af13c7ea848cb9de')
+                              '/return_ticket/%s' % str(ticket.id))
         self.assertEqual(res.status_code, 204)
 
-    def test_post_error(self):
+    def test_delete_error(self):
         res = requests.delete(current_config.GATEWAY_URL + current_config.GATEWAY_PATH +
-                            '/return_ticket/5bd8a540af13')
+                              '/return_ticket/5bd8a540af13')
         self.assertNotEqual(res.status_code, 204)
 
 
