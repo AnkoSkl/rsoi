@@ -172,7 +172,7 @@ class TestGatewayBuyTicket(unittest.TestCase):
                         '/return_ticket/%s' % str(ticket.id))
 
     def test_post_error(self):
-        payload = {'seance_id': '5bd897f8af13c78fe908cb98', 'seat_number': 2}
+        payload = {'seance_id': '5bd897f8', 'seat_number': 2}
         res = requests.post(current_config.GATEWAY_URL + current_config.GATEWAY_PATH + '/buy_ticket',
                             data=jsonpickle.encode(payload))
         self.assertNotEqual(res.status_code, 201)
