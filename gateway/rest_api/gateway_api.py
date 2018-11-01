@@ -4,8 +4,6 @@ from gateway.config import current_config
 import flask
 import jsonpickle
 import requests
-from ticket.domain.ticket import Ticket
-from seance.domain.seance import Seance
 
 
 class GatewayTicketResource(Resource):
@@ -241,6 +239,9 @@ class GatewayBuyTicket(Resource):
         if response.status_code == 201:
             app.logger.info('Билет с идентификатором %s успешно создан' % str(ticket.id))
         else:
+            payload1['status'] = 'return'
+            requests.patch(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH + "/" +
+                           payload["seance_id"], jsonpickle.encode(payload1))
             app.logger.warning('Билет не может быть создан')
             result = flask.Response(status=response.status_code, headers=response.headers.items(),
                                     response=response.content)
@@ -255,6 +256,11 @@ class GatewayBuyTicket(Resource):
         if response.status_code == 201:
             app.logger.info('Покупка билета для пользователя успешно произведена')
         else:
+            payload1['status'] = 'return'
+            requests.patch(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH + "/" +
+                           payload["seance_id"], jsonpickle.encode(payload1))
+            requests.delete(current_config.TICKET_SERVICE_URL + current_config.TICKET_SERVICE_PATH + "/" +
+                            payload3['ticket_id'])
             app.logger.warning('Покупка билета не может быть завершена')
         return result
 
@@ -276,7 +282,7 @@ class GatewayReturnTicket(Resource):
             return result
 
         ticket = jsonpickle.decode(response.content)
-        payload1 = {'seat_number': ticket.seat_number, 'status': 'release'}
+        payload1 = {'seat_number': ticket.seat_number, 'status': 'return'}
         response = requests.patch(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
                                   "/%s" % ticket.seance_id, jsonpickle.encode(payload1))
         if response.status_code == 201:
@@ -287,12 +293,15 @@ class GatewayReturnTicket(Resource):
                                     response=response.content)
             return result
 
-        payload3 = {'ticket_id': ticket_id, 'status': 'release'}
+        payload3 = {'ticket_id': ticket_id, 'status': 'return'}
         response = requests.patch(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
                                   "/%s" % self.user_id, jsonpickle.encode(payload3))
         if response.status_code == 201:
             app.logger.info('Возврат билета для пользователя %s успешно произведен' % self.user_id)
         else:
+            payload1['status'] = 'buy'
+            requests.patch(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
+                           "/%s" % ticket.seance_id, jsonpickle.encode(payload1))
             app.logger.warning('Возврат билета для пользователя %s не может быть произведен' % self.user_id)
             result = flask.Response(status=response.status_code, headers=response.headers.items(),
                                     response=response.content)
@@ -305,5 +314,11 @@ class GatewayReturnTicket(Resource):
         if response.status_code == 204:
             app.logger.info('Билет с идентификатором %s успешно удален' % ticket_id)
         else:
+            payload1['status'] = 'buy'
+            requests.patch(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
+                           "/%s" % ticket.seance_id, jsonpickle.encode(payload1))
+            payload3['status'] = 'buy'
+            requests.patch(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
+                           "/%s" % self.user_id, jsonpickle.encode(payload3))
             app.logger.warning('Билет с идентификатором %s не может быть удален' % ticket_id)
         return result
