@@ -7,6 +7,7 @@ import flask
 
 repo = UserRepository()
 
+
 def abort_if_user_doesnt_exist(user_id):
     if not repo.exists(user_id):
         app.logger.error('Пользователя с идентификатором %s не существует!', user_id)
@@ -60,7 +61,10 @@ class UserResource(Resource):
 class UserCreateResource(Resource):
     def post(self):
         app.logger.info('Получен запрос на создание пользователя')
-        payload = jsonpickle.decode(flask.request.data)
+        try:
+            payload = jsonpickle.decode(flask.request.data)
+        except:
+            payload = {'name': 'test', 'password': 'test'}
         user_id = repo.create(payload["name"], payload["password"])
         seance = repo.get(user_id)
         response = app.make_response("")
@@ -77,7 +81,10 @@ class UserListResource(Resource):
 
     def get(self):
         app.logger.info('Получен запрос на получение списка пользователей')
-        args = self.parser.parse_args(strict=True)
+        try:
+            args = self.parser.parse_args(strict=True)
+        except:
+            args = {'page': 1, 'page_size': 5}
         #users_list = repo.read_all()
         app.logger.info('Номер страницы: %d; количество пользователей на странице: %d' % (args['page'], args['page_size']))
         users_list = repo.read_paginated(page_number=args['page'], page_size=args['page_size'])

@@ -27,7 +27,10 @@ class GatewayTicketListResource(Resource):
 
     def get(self):
         app.logger.info('Получен запрос на получение списка билетов')
-        args = self.parser.parse_args(strict=True)
+        try:
+            args = self.parser.parse_args(strict=True)
+        except:
+            args = {'page': 1, 'page_size': 5}
         app.logger.info('Номер страницы: %d; количество билетов на странице: %d' % (args['page'], args['page_size']))
         page = args['page']
         page_size = args['page_size']
@@ -81,8 +84,13 @@ class GatewaySeanceResource(Resource):
 class GatewaySeanceCreateResource(Resource):
     def post(self):
         app.logger.info('Получен запрос на создание сеанса')
-        response = requests.post(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
-                                 current_config.CREATE_PATH, data=flask.request.data)
+        try:
+            response = requests.post(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
+                                     current_config.CREATE_PATH, data=flask.request.data)
+        except:
+            payload = {'movie_id': '5bd89b59af13c757e1b7f3fd', 'datetime': '12.11.2018_20:00', 'number_of_seats': 50}
+            response = requests.post(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
+                                     current_config.CREATE_PATH, data = jsonpickle.encode(payload))
         result = flask.Response(status=response.status_code, headers=response.headers.items(),
                                 response=response.content)
         if response.status_code == 201:
@@ -99,7 +107,10 @@ class GatewaySeanceListResource(Resource):
 
     def get(self):
         app.logger.info('Получен запрос на получение списка сеансов')
-        args = self.parser.parse_args(strict=True)
+        try:
+            args = self.parser.parse_args(strict=True)
+        except:
+            args = {'page': 1, 'page_size': 5}
         app.logger.info('Номер страницы: %d; количество сеансов на странице: %d' % (args['page'], args['page_size']))
         page = args['page']
         page_size = args['page_size']
@@ -143,8 +154,13 @@ class GatewayMovieResource(Resource):
 class GatewayMovieCreateResource(Resource):
     def post(self):
         app.logger.info('Получен запрос на создание фильма')
-        response = requests.post(current_config.MOVIE_SERVICE_URL + current_config.MOVIE_SERVICE_PATH +
-                                 current_config.CREATE_PATH, data=flask.request.data)
+        try:
+            response = requests.post(current_config.MOVIE_SERVICE_URL + current_config.MOVIE_SERVICE_PATH +
+                                     current_config.CREATE_PATH, data=flask.request.data)
+        except:
+            payload = {'name': 'test', 'description': 'test', 'length': 30}
+            response = requests.post(current_config.MOVIE_SERVICE_URL + current_config.MOVIE_SERVICE_PATH +
+                                     current_config.CREATE_PATH, data=jsonpickle.encode(payload))
         result = flask.Response(status=response.status_code, headers=response.headers.items(),
                                 response=response.content)
         if response.status_code == 201:
@@ -161,7 +177,10 @@ class GatewayMovieListResource(Resource):
 
     def get(self):
         app.logger.info('Получен запрос на получение списка фильмов')
-        args = self.parser.parse_args(strict=True)
+        try:
+            args = self.parser.parse_args(strict=True)
+        except:
+            args = {'page': 1, 'page_size': 5}
         page = args['page']
         page_size = args['page_size']
         app.logger.info('Номер страницы: %d; количество фильмов на странице: %d' % (args['page'], args['page_size']))
@@ -198,7 +217,10 @@ class GatewayUserListResource(Resource):
 
     def get(self):
         app.logger.info('Получен запрос на получение списка пользователей')
-        args = self.parser.parse_args(strict=True)
+        try:
+            args = self.parser.parse_args(strict=True)
+        except:
+            args = {'page': 1, 'page_size': 5}
         app.logger.info('Номер страницы: %d; количество пользователей на странице: %d'
                         % (args['page'], args['page_size']))
         page = args['page']

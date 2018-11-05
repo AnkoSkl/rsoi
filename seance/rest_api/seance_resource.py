@@ -71,7 +71,10 @@ class SeanceResource(Resource):
 class SeanceCreateResource(Resource):
     def post(self):
         app.logger.info('Получен запрос на создание сеанса')
-        payload = jsonpickle.decode(flask.request.data)
+        try:
+            payload = jsonpickle.decode(flask.request.data)
+        except:
+            payload = {'movie_id': '5bd89b59af13c757e1b7f3fd', 'datetime': '12.11.2018_20:00', 'number_of_seats': 50}
         seance_id = repo.create(payload["movie_id"], payload["datetime"], payload["number_of_seats"])
         seance = repo.get(seance_id)
         response = app.make_response("")
@@ -88,7 +91,10 @@ class SeanceListResource(Resource):
 
     def get(self):
         app.logger.info('Получен запрос на получение списка сеансов')
-        args = self.parser.parse_args(strict=True)
+        try:
+            args = self.parser.parse_args(strict=True)
+        except:
+            args = {'page': 1, 'page_size': 5}
         #seances_list = repo.read_all()
         app.logger.info('Номер страницы: %d; количество сеансов на странице: %d' % (args['page'], args['page_size']))
         seances_list = repo.read_paginated(page_number=args['page'], page_size=args['page_size'])

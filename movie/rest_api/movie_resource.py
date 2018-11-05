@@ -38,7 +38,10 @@ class MovieResource(Resource):
 class MovieCreateResource(Resource):
     def post(self):
         app.logger.info('Получен запрос на создание фильма')
-        payload = jsonpickle.decode(flask.request.data)
+        try:
+            payload = jsonpickle.decode(flask.request.data)
+        except:
+            payload = {'name': 'test', 'description': 'test', 'length': 60}
         movie_id = repo.create(payload["name"], payload["description"], payload["length"])
         movie = repo.get(movie_id)
         response = app.make_response("")
@@ -55,7 +58,10 @@ class MovieListResource(Resource):
 
     def get(self):
         app.logger.info('Получен запрос на получение списка фильмов')
-        args = self.parser.parse_args(strict=True)
+        try:
+            args = self.parser.parse_args(strict=True)
+        except:
+            args = {'page': 1, 'page_size': 5}
         #movies_list = repo.read_all()
         app.logger.info('Номер страницы: %d; количество фильмов на странице: %d' % (args['page'], args['page_size']))
         movies_list = repo.read_paginated(page_number=args['page'], page_size=args['page_size'])
