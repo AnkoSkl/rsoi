@@ -1,8 +1,11 @@
 import unittest
 import jsonpickle
+import requests
+from gateway.config import current_config
 from gateway.rest_api.gateway_api import GatewayTicketResource, GatewayTicketListResource, GatewaySeanceResource
 from gateway.rest_api.gateway_api import GatewaySeanceCreateResource, GatewaySeanceListResource, GatewayMovieResource
 from gateway.rest_api.gateway_api import GatewayMovieCreateResource, GatewayMovieListResource, GatewayUserResource
+from gateway.rest_api.gateway_api import GatewayReturnTicket
 from seance.rest_api.seance_resource import SeanceResource, SeanceCreateResource
 from movie.rest_api.movie_resource import MovieResource, MovieCreateResource
 from ticket.rest_api.ticket_resource import TicketResource, TicketCreateResource
@@ -146,6 +149,22 @@ class TestGatewayUserListResource(unittest.TestCase):
         gsr = GatewayMovieListResource()
         res = gsr.get()
         self.assertEqual(res.status_code, 200)
+
+
+class TestGatewayReturnTicket(unittest.TestCase):
+    def test_delete_right(self):
+        payload = {'seance_id': '5bd897f8af13c78fe908cb98', 'seat_number': 7}
+        res = requests.post(current_config.GATEWAY_URL + current_config.GATEWAY_PATH + '/buy_ticket',
+                            data=jsonpickle.encode(payload))
+        ticket = jsonpickle.decode(res.content)
+        ret_ticket = GatewayReturnTicket()
+        res = ret_ticket.delete(str(ticket.id))
+        self.assertEqual(res.status_code, 204)
+
+    def test_delete_error(self):
+        ret_ticket = GatewayReturnTicket()
+        res = ret_ticket.delete("5bd897f8")
+        self.assertNotEqual(res.status_code, 204)
 
 
 if __name__ == '__main__':

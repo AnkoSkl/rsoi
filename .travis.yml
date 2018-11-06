@@ -9,7 +9,6 @@ install:
     pip install -r requirements.txt
     
 script:
-    - python -m unittest -v unittests/gateway_test/gateway_cov_test.py
     - python -m unittest -v unittests/movie_tests/movie_repository_test.py
     - python -m unittest -v unittests/movie_tests/movie_resource_cov_test.py
     - python -m unittest -v unittests/seance_tests/seance_repository_test.py
