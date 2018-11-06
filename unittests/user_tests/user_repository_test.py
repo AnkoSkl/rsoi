@@ -15,10 +15,11 @@ class TestUserRepository(unittest.TestCase):
 
     def test_get_right(self):
         rep = UserRepository()
-        user1 = rep.get('5bd0a397af13c713737dae93')
-        user2 = User(user_id=fields.ObjectId('5bd0a397af13c713737dae93'), ticket_ids=[], name='admin',
-                     password='123')
+        user_id = rep.create('name', 'password')
+        user1 = rep.get(user_id)
+        user2 = User(user_id=fields.ObjectId(user_id), ticket_ids=[], name='name', password='password')
         self.assertEqual(user1, user2)
+        rep.delete(user_id)
 
     def test_get_error(self):
         rep = UserRepository()
@@ -38,9 +39,10 @@ class TestUserRepository(unittest.TestCase):
 
     def test_assign_ticket_true(self):
         rep = UserRepository()
-        boolean = rep.assign_ticket('5bd0a397af13c713737dae93', 'abc')
+        user_id = rep.create('name', 'password')
+        boolean = rep.assign_ticket(user_id, 'abc')
         self.assertTrue(boolean)
-        rep.remove_ticket('5bd0a397af13c713737dae93', 'abc')
+        rep.delete(user_id)
 
     def test_assign_ticket_false(self):
         rep = UserRepository()
@@ -49,9 +51,11 @@ class TestUserRepository(unittest.TestCase):
 
     def test_remove_ticket_true(self):
         rep = UserRepository()
-        rep.assign_ticket('5bd0a397af13c713737dae93', 'abc')
-        boolean = rep.remove_ticket('5bd0a397af13c713737dae93', 'abc')
+        user_id = rep.create('name', 'password')
+        rep.assign_ticket(user_id, 'abc')
+        boolean = rep.remove_ticket(user_id, 'abc')
         self.assertTrue(boolean)
+        rep.delete(user_id)
 
     def test_remove_ticket_false(self):
         rep = UserRepository()
@@ -60,8 +64,10 @@ class TestUserRepository(unittest.TestCase):
 
     def test_exists_true(self):
         rep = UserRepository()
-        boolean = rep.exists('5bd0a397af13c713737dae93')
+        user_id = rep.create('name', 'password')
+        boolean = rep.exists(user_id)
         self.assertTrue(boolean)
+        rep.delete(user_id)
 
     def test_exists_false(self):
         rep = UserRepository()

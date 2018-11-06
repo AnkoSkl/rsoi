@@ -15,18 +15,12 @@ class TestSeanceRepository(unittest.TestCase):
 
     def test_get_exists(self):
         rep = SeanceRepository()
-        seance1 = rep.get('5bd897f8af13c78fe908cb98')
-        seance2 = Seance(seance_id=fields.ObjectId('5bd897f8af13c78fe908cb98'),
-                         movie_id=fields.ObjectId('5bd0a513af13c7251f913dd9'), date_time='22.11.2018_10:15',
-                         seats=[False, True, False, False, False, True, True, True, True, True, True, True, True, True,
-                                True, True, True, True, True, True, True, True, True, True, True, True, True, True,
-                                True, True, True, True, True, True, True, True, True, True, True, True, True, True,
-                                True, True, True, True, True, True, True, True, True, True, True, True, True, True,
-                                True, True, True, True, True, True, True, True, True, True, True, True, True, True,
-                                True, True, True, True, True, True, True, True, True, True, True, True, True, True,
-                                True, True, True, True, True, True, True, True, True, True, True, True, True, True,
-                                True, True])
+        seance_id = rep.create('5bd89b59af13c757e1b7f3fd', '01.01.2018_12:00', 5)
+        seance1 = rep.get(seance_id)
+        seance2 = Seance(seance_id=fields.ObjectId(seance_id), movie_id=fields.ObjectId('5bd89b59af13c757e1b7f3fd'),
+                         date_time='01.01.2018_12:00', seats=[True, True, True, True, True])
         self.assertEqual(seance1, seance2)
+        rep.delete(seance_id)
 
     def test_get_false(self):
         rep = SeanceRepository()
@@ -46,14 +40,18 @@ class TestSeanceRepository(unittest.TestCase):
 
     def test_get_a_seat_true(self):
         rep = SeanceRepository()
-        boolean = rep.get_a_seat('5bd897f8af13c78fe908cb98', 2)
+        seance_id = rep.create('5bd89b59af13c757e1b7f3fd', '01.01.2018_12:00', 50)
+        boolean = rep.get_a_seat(seance_id, 2)
         self.assertTrue(boolean)
-        rep.free_a_seat('5bd897f8af13c78fe908cb98', 2)
+        rep.delete(seance_id)
 
     def test_get_a_seat_false(self):
         rep = SeanceRepository()
-        boolean = rep.get_a_seat('5bd897f8af13c78fe908cb98', 1)
+        seance_id = rep.create('5bd89b59af13c757e1b7f3fd', '01.01.2018_12:00', 50)
+        rep.get_a_seat(seance_id, 2)
+        boolean = rep.get_a_seat(seance_id, 2)
         self.assertFalse(boolean)
+        rep.delete(seance_id)
 
     def test_get_a_seat_none(self):
         rep = SeanceRepository()
@@ -62,14 +60,18 @@ class TestSeanceRepository(unittest.TestCase):
 
     def test_free_a_seat_true(self):
         rep = SeanceRepository()
-        boolean = rep.free_a_seat('5bd897f8af13c78fe908cb98', 1)
+        seance_id = rep.create('5bd89b59af13c757e1b7f3fd', '01.01.2018_12:00', 50)
+        rep.get_a_seat(seance_id, 1)
+        boolean = rep.free_a_seat(seance_id, 1)
         self.assertTrue(boolean)
-        rep.get_a_seat('5bd897f8af13c78fe908cb98', 1)
+        rep.delete(seance_id)
 
     def test_free_a_seat_false(self):
         rep = SeanceRepository()
-        boolean = rep.free_a_seat('5bd897f8af13c78fe908cb98', 2)
+        seance_id = rep.create('5bd89b59af13c757e1b7f3fd', '01.01.2018_12:00', 50)
+        boolean = rep.free_a_seat(seance_id, 2)
         self.assertFalse(boolean)
+        rep.delete(seance_id)
 
     def test_free_a_seat_none(self):
         rep = SeanceRepository()
@@ -78,8 +80,10 @@ class TestSeanceRepository(unittest.TestCase):
 
     def test_exists(self):
         rep = SeanceRepository()
-        boolean = rep.exists('5bd897f8af13c78fe908cb98')
+        seance_id = rep.create('5bd89b59af13c757e1b7f3fd', '01.01.2018_12:00', 50)
+        boolean = rep.exists(seance_id)
         self.assertTrue(boolean)
+        rep.delete(seance_id)
 
 
 if __name__ == '__main__':

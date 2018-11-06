@@ -3,6 +3,7 @@ from movie.repository.movie_repository import MovieRepository
 from movie.domain.movie import Movie
 from flask_mongoalchemy import fields
 
+
 class TestMovieRepository(unittest.TestCase):
     def test_create(self):
         rep = MovieRepository()
@@ -14,9 +15,11 @@ class TestMovieRepository(unittest.TestCase):
 
     def test_get_right(self):
         rep = MovieRepository()
-        movie1 = rep.get('5bd89b59af13c757e1b7f3fd')
-        movie2 = Movie(movie_id=fields.ObjectId('5bd89b59af13c757e1b7f3fd'), name='test', description='test', length=30)
+        movie_id = rep.create('a', 'a', 100)
+        movie1 = rep.get(movie_id)
+        movie2 = Movie(movie_id=fields.ObjectId(movie_id), name='a', description='a', length=100)
         self.assertEqual(movie1, movie2)
+        rep.delete(movie_id)
 
     def test_get_none(self):
         rep = MovieRepository()
@@ -25,8 +28,10 @@ class TestMovieRepository(unittest.TestCase):
 
     def test_exists_true(self):
         rep = MovieRepository()
-        boolean = rep.exists('5bd89b59af13c757e1b7f3fd')
+        movie_id = rep.create('a', 'a', 100)
+        boolean = rep.exists(movie_id)
         self.assertTrue(boolean)
+        rep.delete(movie_id)
 
     def test_exists_false(self):
         rep = MovieRepository()

@@ -15,10 +15,11 @@ class TestTicketRepository(unittest.TestCase):
 
     def test_get_right(self):
         rep = TicketRepository()
-        ticket1 = rep.get('5bd89fd9af13c7ea848cb9dc')
-        ticket2 = Ticket(ticket_id=fields.ObjectId('5bd89fd9af13c7ea848cb9dc'),
-                        seance_id='5bd897f8af13c78fe908cb98', seat_number=1)
+        ticket_id = rep.create(seance_id='5bd897f8af13c78fe908cb98', seat_number=1)
+        ticket1 = rep.get(ticket_id)
+        ticket2 = Ticket(ticket_id=fields.ObjectId(ticket_id), seance_id='5bd897f8af13c78fe908cb98', seat_number=1)
         self.assertEqual(ticket1, ticket2)
+        rep.delete(ticket_id)
 
     def test_get_error(self):
         rep = TicketRepository()
@@ -38,8 +39,10 @@ class TestTicketRepository(unittest.TestCase):
 
     def test_exists_true(self):
         rep = TicketRepository()
-        boolean = rep.exists('5bd89fd9af13c7ea848cb9dc')
+        ticket_id = rep.create(seance_id='5bd897f8af13c78fe908cb98', seat_number=1)
+        boolean = rep.exists(ticket_id)
         self.assertTrue(boolean)
+        rep.delete(ticket_id)
 
     def test_exists_false(self):
         rep = TicketRepository()
