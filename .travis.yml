@@ -16,5 +16,5 @@ script:
     - python -m unittest -v unittests/seance_tests/seance_resource_cov_test.py
     - python -m unittest -v unittests/ticket_tests/ticket_repository_test.py
     - python -m unittest -v unittests/ticket_tests/ticket_resource_cov_test.py
-    - python -m unittest -v unittests/user_tests/ticket_resource_test.py
+    - python -m unittest -v unittests/user_tests/user_repository_test.py
     - python -m unittest -v unittests/user_tests/user_resource_cov_test.py
