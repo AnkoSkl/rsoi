@@ -1,7 +1,7 @@
 import unittest
-import requests
-from gateway.config import current_config
 import jsonpickle
+import requests
+from config import current_config
 
 
 class TestGatewayTicketResource(unittest.TestCase):

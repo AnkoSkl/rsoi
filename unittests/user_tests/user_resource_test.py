@@ -1,7 +1,7 @@
 import unittest
-from gateway.config import current_config
-import requests
 import jsonpickle
+import requests
+from config import current_config
 
 
 class TestUserCreateResource(unittest.TestCase):

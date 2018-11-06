@@ -1,13 +1,13 @@
 import unittest
 import jsonpickle
 import requests
-from gateway.config import current_config
-from gateway.rest_api.gateway_api import GatewayTicketResource, GatewayTicketListResource, GatewaySeanceResource
-from gateway.rest_api.gateway_api import GatewaySeanceCreateResource, GatewaySeanceListResource, GatewayMovieResource
+from config import current_config
 from gateway.rest_api.gateway_api import GatewayMovieCreateResource, GatewayMovieListResource, GatewayUserResource
 from gateway.rest_api.gateway_api import GatewayReturnTicket
-from seance.rest_api.seance_resource import SeanceResource, SeanceCreateResource
+from gateway.rest_api.gateway_api import GatewaySeanceCreateResource, GatewaySeanceListResource, GatewayMovieResource
+from gateway.rest_api.gateway_api import GatewayTicketResource, GatewayTicketListResource, GatewaySeanceResource
 from movie.rest_api.movie_resource import MovieResource, MovieCreateResource
+from seance.rest_api.seance_resource import SeanceResource, SeanceCreateResource
 from ticket.rest_api.ticket_resource import TicketResource, TicketCreateResource
 from user.rest_api.user_resource import UserResource, UserCreateResource
 

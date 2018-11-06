@@ -1,9 +1,10 @@
-from flask_restful import Resource, reqparse
-from gateway import app
-from gateway.config import current_config
 import flask
 import jsonpickle
 import requests
+from flask_restful import Resource, reqparse
+
+from config import current_config
+from gateway import app
 
 
 class GatewayTicketResource(Resource):

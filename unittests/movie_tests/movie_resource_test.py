@@ -1,8 +1,8 @@
 import unittest
-from gateway.config import current_config
-import requests
+
 import jsonpickle
-from movie.rest_api.movie_resource import MovieResource, MovieCreateResource, MovieListResource
+import requests
+from config import current_config
 
 
 class TestMovieCreateResource(unittest.TestCase):
