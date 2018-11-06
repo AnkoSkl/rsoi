@@ -2,6 +2,11 @@ language: python
 
 python:
     - "3.6"
+
+services: mongodb
+
+before_script:
+    - sudo /etc/init.d/mongod start
     
 install:
     pip install -r requirements.txt
