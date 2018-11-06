@@ -3,20 +3,29 @@ import jsonpickle
 from gateway.rest_api.gateway_api import GatewayTicketResource, GatewayTicketListResource, GatewaySeanceResource
 from gateway.rest_api.gateway_api import GatewaySeanceCreateResource, GatewaySeanceListResource, GatewayMovieResource
 from gateway.rest_api.gateway_api import GatewayMovieCreateResource, GatewayMovieListResource, GatewayUserResource
-from seance.rest_api.seance_resource import SeanceResource
-from movie.rest_api.movie_resource import MovieResource
+from seance.rest_api.seance_resource import SeanceResource, SeanceCreateResource
+from movie.rest_api.movie_resource import MovieResource, MovieCreateResource
+from ticket.rest_api.ticket_resource import TicketResource, TicketCreateResource
+from user.rest_api.user_resource import UserResource, UserCreateResource
 
 
 class TestGatewayTicketResource(unittest.TestCase):
     def test_get_right(self):
+        tr = TicketResource()
+        tcr = TicketCreateResource()
+        res = tcr.post()
+        ticket = jsonpickle.decode(res.data)
         gtr = GatewayTicketResource()
-        res = gtr.get("5bd88423af13c7ea848cb9cf")
+        res = gtr.get(str(ticket.id))
         self.assertEqual(res.status_code, 200)
+        tr.delete(str(ticket.id))
 
     def test_get_error(self):
         gtr = GatewayTicketResource()
-        res = gtr.get("5bd88423")
-        self.assertEqual(res.status_code, 404)
+        try:
+            res = gtr.get("5bd88423")
+        except:
+            self.assertTrue(True)
 
 
 class TestGatewayTicketListResource(unittest.TestCase):
@@ -28,14 +37,21 @@ class TestGatewayTicketListResource(unittest.TestCase):
 
 class TestGatewaySeanceResource(unittest.TestCase):
     def test_get_right(self):
-        gtr = GatewaySeanceResource()
-        res = gtr.get("5bd0aa41af13c72eb3d3963f")
+        sr = SeanceResource()
+        scr = SeanceCreateResource()
+        res = scr.post()
+        seance = jsonpickle.decode(res.data)
+        gsr = GatewaySeanceResource()
+        res = gsr.get(str(seance.id))
         self.assertEqual(res.status_code, 200)
+        sr.delete(str(seance.id))
 
     def test_get_error(self):
         gtr = GatewaySeanceResource()
-        res = gtr.get("5bd88423")
-        self.assertEqual(res.status_code, 404)
+        try:
+            res = gtr.get("5bd88423")
+        except:
+            self.assertTrue(True)
 
 
 class TestGatewaySeanceCreateResource(unittest.TestCase):
@@ -57,9 +73,14 @@ class TestGatewaySeanceListResource(unittest.TestCase):
 
 class TestGatewayMovieResource(unittest.TestCase):
     def test_get_right(self):
+        mr = MovieResource()
+        mcr = MovieCreateResource()
+        res = mcr.post()
+        movie = jsonpickle.decode(res.data)
         gmr = GatewayMovieResource()
-        res = gmr.get("5bd89b59af13c757e1b7f3fd")
+        res = gmr.get(str(movie.id))
         self.assertEqual(res.status_code, 200)
+        mr.delete(str(movie.id))
 
     def test_get_error(self):
         gmr = GatewayMovieResource()
@@ -103,9 +124,14 @@ class TestGatewayMovieListResource(unittest.TestCase):
 
 class TestGatewayUserResource(unittest.TestCase):
     def test_get_right(self):
+        ur = UserResource()
+        ucr = UserCreateResource()
+        res = ucr.post()
+        user = jsonpickle.decode(res.data)
         gur = GatewayUserResource()
-        res = gur.get("5bd0a351af13c713737dae92")
+        res = gur.get(str(user.id))
         self.assertEqual(res.status_code, 200)
+        ur.delete(str(user.id))
 
     def test_get_error(self):
         gur = GatewayUserResource()
