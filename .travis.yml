@@ -7,8 +7,12 @@ install:
     pip install -r requirements.txt
     
 script:
-    - python -m unittest -v unittests/gateway_test/*.py
-    - python -m unittest -v unittests/movie_tests/*.py
-    - python -m unittest -v unittests/seance_tests/*.py
-    - python -m unittest -v unittests/ticket_tests/*.py
-    - python -m unittest -v unittests/user_tests/*.py
+    - python -m unittest -v unittests/gateway_test/gateway_test.py
+    - python -m unittest -v unittests/movie_tests/movie_repository_test.py
+    - python -m unittest -v unittests/movie_tests/movie_resource_test.py
+    - python -m unittest -v unittests/seance_tests/seance_repository_test.py
+    - python -m unittest -v unittests/seance_tests/seance_resource_test.py
+    - python -m unittest -v unittests/ticket_tests/ticket_repository_test.py
+    - python -m unittest -v unittests/ticket_tests/ticket_resource_test.py
+    - python -m unittest -v unittests/user_tests/ticket_resource_test.py
+    - python -m unittest -v unittests/user_tests/user_resource_test.py
