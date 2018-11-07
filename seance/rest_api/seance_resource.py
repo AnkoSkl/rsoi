@@ -47,7 +47,7 @@ class SeanceResource(Resource):
                 app.logger.info('Место на сеанс %s успешно куплено' % seance_id)
             else:
                 response = app.make_response("This seat cannot be bought!")
-                response.status_code = 301
+                response.status_code = 409
                 app.logger.warning('Выбранное место на сеанс %s занято, покупка билета не может быть завершена'
                                    % seance_id)
         else:
@@ -59,7 +59,7 @@ class SeanceResource(Resource):
                 app.logger.info('Возврат билета на сеанс %s успешно завершен' % seance_id)
             else:
                 response = app.make_response("This seat cannot be released!")
-                response.status_code = 301
+                response.status_code = 409
                 app.logger.warning('Возврат билета на сеанс %s не может быть завершен, так как место еще не занято'
                                 % seance_id)
 
