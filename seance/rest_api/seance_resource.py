@@ -21,6 +21,7 @@ class SeanceResource(Resource):
         seance = repo.get(seance_id)
         response = app.make_response("")
         response.status_code = 200
+        response.content_type = "application/json"
         response.data = jsonpickle.encode(seance)
         app.logger.info('Запрос на получение информации о сеансе с идентификатором %s успешно обработан' % seance_id)
         return response
@@ -43,10 +44,12 @@ class SeanceResource(Resource):
             res = repo.get_a_seat(seance_id, payload["seat_number"])
             if res == True:
                 response = app.make_response("")
+                response.content_type = "application/json"
                 response.status_code = 201
                 app.logger.info('Место на сеанс %s успешно куплено' % seance_id)
             else:
                 response = app.make_response("This seat cannot be bought!")
+                response.content_type = "application/json"
                 response.status_code = 409
                 app.logger.warning('Выбранное место на сеанс %s занято, покупка билета не может быть завершена'
                                    % seance_id)
@@ -55,10 +58,12 @@ class SeanceResource(Resource):
             res = repo.free_a_seat(seance_id, payload["seat_number"])
             if res == True:
                 response = app.make_response("")
+                response.content_type = "application/json"
                 response.status_code = 201
                 app.logger.info('Возврат билета на сеанс %s успешно завершен' % seance_id)
             else:
                 response = app.make_response("This seat cannot be released!")
+                response.content_type = "application/json"
                 response.status_code = 409
                 app.logger.warning('Возврат билета на сеанс %s не может быть завершен, так как место еще не занято'
                                 % seance_id)
@@ -79,6 +84,7 @@ class SeanceCreateResource(Resource):
         seance = repo.get(seance_id)
         response = app.make_response("")
         response.status_code = 201
+        response.content_type = "application/json"
         response.data = jsonpickle.encode(seance)
         app.logger.info('Сеанс с идентификатором %s успешно создан' % seance_id)
         return response
@@ -95,11 +101,11 @@ class SeanceListResource(Resource):
             args = self.parser.parse_args(strict=True)
         except:
             args = {'page': 1, 'page_size': 5}
-        #seances_list = repo.read_all()
         app.logger.info('Номер страницы: %d; количество сеансов на странице: %d' % (args['page'], args['page_size']))
         seances_list = repo.read_paginated(page_number=args['page'], page_size=args['page_size'])
         response = app.make_response("")
         response.status_code = 200
+        response.content_type = "application/json"
         response.data = jsonpickle.encode(seances_list)
         app.logger.info('Запрос на получение списка сеансов успешно обработан')
         return response

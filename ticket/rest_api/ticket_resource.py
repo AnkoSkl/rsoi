@@ -21,6 +21,7 @@ class TicketResource(Resource):
         ticket = repo.get(ticket_id)
         response = app.make_response("")
         response.status_code = 200
+        response.content_type = "application/json"
         response.data = jsonpickle.encode(ticket)
         app.logger.info('Запрос на получение информации о билете с идентификатором %s успешно обработан'
                         % ticket_id)
@@ -46,6 +47,7 @@ class TicketCreateResource(Resource):
         ticket_id = repo.create(payload["seance_id"], payload["seat_number"])
         ticket = repo.get(ticket_id)
         response = app.make_response("")
+        response.content_type = "application/json"
         response.status_code = 201
         response.data = jsonpickle.encode(ticket)
         app.logger.info('Бмлет с идентификатором %s успешно создан (куплен)' % ticket_id)
@@ -67,6 +69,7 @@ class TicketListResource(Resource):
         app.logger.info('Номер страницы: %d; количество билетов на странице: %d' % (args['page'], args['page_size']))
         ticket_list = repo.read_paginated(page_number=args['page'], page_size=args['page_size'])
         response = app.make_response("")
+        response.content_type = "application/json"
         response.status_code = 200
         response.data = jsonpickle.encode(ticket_list)
         app.logger.info('Запрос на получение списка билетов успешно обработан')

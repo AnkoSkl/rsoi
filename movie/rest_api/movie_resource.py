@@ -21,6 +21,7 @@ class MovieResource(Resource):
         movie = repo.get(movie_id)
         response = app.make_response("")
         response.status_code = 200
+        response.content_type = "application/json"
         response.data = jsonpickle.encode(movie)
         app.logger.info('Запрос на получение информации о фильме с идентификатором %s успешно обработан' % movie_id)
         return response
@@ -46,6 +47,7 @@ class MovieCreateResource(Resource):
         movie = repo.get(movie_id)
         response = app.make_response("")
         response.status_code = 201
+        response.content_type = "application/json"
         response.data = jsonpickle.encode(movie)
         app.logger.info('Фильм с идентификатором %s успешно создан' % movie_id)
         return response
@@ -62,11 +64,11 @@ class MovieListResource(Resource):
             args = self.parser.parse_args(strict=True)
         except:
             args = {'page': 1, 'page_size': 5}
-        #movies_list = repo.read_all()
         app.logger.info('Номер страницы: %d; количество фильмов на странице: %d' % (args['page'], args['page_size']))
         movies_list = repo.read_paginated(page_number=args['page'], page_size=args['page_size'])
         response = app.make_response("")
         response.status_code = 200
+        response.content_type = "application/json"
         response.data = jsonpickle.encode(movies_list)
         app.logger.info('Запрос на получение списка фильмов успешно обработан')
         return response

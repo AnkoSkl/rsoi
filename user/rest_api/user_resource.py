@@ -22,6 +22,7 @@ class UserResource(Resource):
         response = app.make_response("")
         response.status_code = 200
         response.data = jsonpickle.encode(user)
+        response.content_type = "application/json"
         app.logger.info('Запрос на получение информации о пользователе с идентификатором %s успешно обработан'
                         % user_id)
         return response
@@ -46,16 +47,17 @@ class UserResource(Resource):
             app.logger.info('Возврат билета с идентификатором %s' % payload["ticket_id"])
             repo.remove_ticket(user_id, payload["ticket_id"])
         user = repo.get(user_id)
-        responce = app.make_response("")
-        responce.status_code = 201
-        responce.data = jsonpickle.encode(user)
+        response = app.make_response("")
+        response.status_code = 201
+        response.data = jsonpickle.encode(user)
+        response.content_type = "application/json"
         if payload["status"] == "buy":
             app.logger.info('Покупка билета %s для пользователя %s успешно произведена'
                             % (payload["ticket_id"], user_id))
         else:
             app.logger.info('Возврат билета %s для пользователя %s успешно произведен'
                             % (payload["ticket_id"], user_id))
-        return responce
+        return response
 
 
 class UserCreateResource(Resource):
@@ -70,6 +72,7 @@ class UserCreateResource(Resource):
         response = app.make_response("")
         response.status_code = 201
         response.data = jsonpickle.encode(seance)
+        response.content_type = "application/json"
         app.logger.info('Запрос на создание нового пользователя успешно обработан, идентификатор: %s' % user_id)
         return response
 
@@ -90,6 +93,7 @@ class UserListResource(Resource):
         users_list = repo.read_paginated(page_number=args['page'], page_size=args['page_size'])
         response = app.make_response("")
         response.status_code = 200
+        response.content_type = "application/json"
         response.data = jsonpickle.encode(users_list)
         app.logger.info('Запрос на получение списка пользователей успешно обработан')
         return response
