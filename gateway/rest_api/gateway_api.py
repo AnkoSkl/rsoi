@@ -2,9 +2,13 @@ import flask
 import jsonpickle
 import requests
 from flask_restful import Resource, reqparse
-
+from seance.domain.seance import Seance
+from movie.domain.movie import Movie
+from ticket.domain.ticket import Ticket
+from user.domain.user import User
 from config import current_config
 from gateway import app
+import json
 
 
 class GatewayTicketResource(Resource):
@@ -60,7 +64,7 @@ class GatewaySeanceResource(Resource):
                                     response=response_seance.content)
             return result
 
-        seance = jsonpickle.decode(response_seance.content)
+        seance = Seance.from_json(response_seance.content) #jsonpickle.decode(response_seance.content)
         movie_id = str(seance.movie_id)
 
         response_movie = requests.get(current_config.MOVIE_SERVICE_URL + current_config.MOVIE_SERVICE_PATH +
@@ -73,10 +77,10 @@ class GatewaySeanceResource(Resource):
             result = flask.Response(status=response_movie.status_code, headers=response_movie.headers.items(),
                                     response=response_movie.content)
             return result
-        movie = jsonpickle.decode(response_movie.content)
-        response = {"seance":seance, "movie":movie}
+        movie = Movie.from_json(response_movie.content)
+        response = seance.to_json() + '\n' + movie.to_json()
         result = flask.Response(status=response_seance.status_code, headers=response_seance.headers.items(),
-                                response=jsonpickle.encode(response))
+                                response=response)
         app.logger.info('Запрос на получение подробной информации о сеансе с идентификатором %s успешно обработан'
                         % seance_id)
         return result
@@ -258,7 +262,7 @@ class GatewayBuyTicket(Resource):
 
         response = requests.post(current_config.TICKET_SERVICE_URL + current_config.TICKET_SERVICE_PATH +
                                  current_config.CREATE_PATH, jsonpickle.encode(payload))
-        ticket = jsonpickle.decode(response.content)
+        ticket = Ticket.from_json(response.content) #jsonpickle.decode(response.content)
         if response.status_code == 201:
             app.logger.info('Билет с идентификатором %s успешно создан' % str(ticket.id))
         else:
@@ -304,7 +308,7 @@ class GatewayReturnTicket(Resource):
                                     response=response.content)
             return result
 
-        ticket = jsonpickle.decode(response.content)
+        ticket = Ticket.from_json(response.content) #jsonpickle.decode(response.content)
         payload1 = {'seat_number': ticket.seat_number, 'status': 'return'}
         response = requests.patch(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
                                   "/%s" % ticket.seance_id, jsonpickle.encode(payload1))
