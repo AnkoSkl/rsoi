@@ -48,7 +48,7 @@ class MovieCreateResource(Resource):
         response = app.make_response("")
         response.status_code = 201
         response.content_type = "application/json"
-        response.data = jsonpickle.encode(movie)
+        response.data = movie.to_json() #jsonpickle.encode(movie)
         app.logger.info('Фильм с идентификатором %s успешно создан' % movie_id)
         return response
 
