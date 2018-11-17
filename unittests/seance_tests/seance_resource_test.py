@@ -2,6 +2,7 @@ import unittest
 import jsonpickle
 import requests
 from config import current_config
+from seance.domain.seance import Seance
 
 
 class TestSeanceCreateResource(unittest.TestCase):
@@ -10,7 +11,7 @@ class TestSeanceCreateResource(unittest.TestCase):
         res = requests.post(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
                             current_config.CREATE_PATH, data=jsonpickle.encode(payload))
         self.assertEqual(res.status_code, 201)
-        seance = jsonpickle.decode(res.content)
+        seance = Seance.from_json(res.content)
         requests.delete(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH + "/%s" % str(seance.id))
 
 
@@ -29,7 +30,7 @@ class TestSeanceResource(unittest.TestCase):
         payload = {'movie_id': '5bd89b59af13c757e1b7f3fd', 'datetime': '10.10.2010', 'number_of_seats': 30}
         res = requests.post(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
                             current_config.CREATE_PATH, data=jsonpickle.encode(payload))
-        seance = jsonpickle.decode(res.content)
+        seance = Seance.from_json(res.content)
         res = requests.delete(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
                               "/%s" % str(seance.id))
         self.assertEqual(res.status_code, 204)

@@ -1,6 +1,6 @@
 import unittest
-import jsonpickle
 from seance.rest_api.seance_resource import SeanceResource, SeanceListResource, SeanceCreateResource
+from seance.domain.seance import Seance
 
 
 class TestSeanceCreateResource(unittest.TestCase):
@@ -9,7 +9,7 @@ class TestSeanceCreateResource(unittest.TestCase):
         res = sr.post()
         self.assertEqual(res.status_code, 201)
         sr1 = SeanceResource()
-        seance = jsonpickle.decode(res.data)
+        seance = Seance.from_json(res.data)
         sr1.delete(str(seance.id))
 
 
@@ -18,7 +18,7 @@ class TestSeanceResource(unittest.TestCase):
         scr = SeanceCreateResource()
         sr = SeanceResource()
         res = scr.post()
-        seance = jsonpickle.decode(res.data)
+        seance = Seance.from_json(res.data)
         res = sr.get(str(seance.id))
         self.assertEqual(res.status_code, 200)
         sr.delete(str(seance.id))
@@ -41,7 +41,7 @@ class TestSeanceResource(unittest.TestCase):
         sr = SeanceCreateResource()
         res = sr.post()
         sr1 = SeanceResource()
-        seance = jsonpickle.decode(res.data)
+        seance = Seance.from_json(res.data)
         res = sr1.delete(str(seance.id))
         self.assertEqual(res.status_code, 204)
 

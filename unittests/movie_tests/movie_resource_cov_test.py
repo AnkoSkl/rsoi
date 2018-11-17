@@ -1,6 +1,6 @@
 import unittest
-import jsonpickle
 from movie.rest_api.movie_resource import MovieResource, MovieCreateResource, MovieListResource
+from movie.domain.movie import Movie
 
 
 class TestMovieCreateResource(unittest.TestCase):
@@ -8,7 +8,7 @@ class TestMovieCreateResource(unittest.TestCase):
         mr = MovieCreateResource()
         res = mr.post()
         self.assertEqual(res.status_code, 201)
-        movie = jsonpickle.decode(res.data)
+        movie = Movie.from_json(res.data)
         mr1 = MovieResource()
         mr1.delete(str(movie.id))
 
@@ -18,7 +18,7 @@ class TestMovieResource(unittest.TestCase):
         mr1 = MovieResource()
         mr2 = MovieCreateResource()
         res = mr2.post()
-        movie = jsonpickle.decode(res.data)
+        movie = Movie.from_json(res.data)
         res = mr1.get(str(movie.id))
         self.assertEqual(res.status_code, 200)
         mr1.delete(str(movie.id))
@@ -40,7 +40,7 @@ class TestMovieResource(unittest.TestCase):
     def test_delete_right(self):
         mr = MovieCreateResource()
         res = mr.post()
-        movie = jsonpickle.decode(res.data)
+        movie = Movie.from_json(res.data)
         mr1 = MovieResource()
         res = mr1.delete(str(movie.id))
         self.assertEqual(res.status_code, 204)

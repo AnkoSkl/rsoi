@@ -1,8 +1,8 @@
 import unittest
-
 import jsonpickle
 import requests
 from config import current_config
+from movie.domain.movie import Movie
 
 
 class TestMovieCreateResource(unittest.TestCase):
@@ -11,7 +11,7 @@ class TestMovieCreateResource(unittest.TestCase):
         res = requests.post(current_config.MOVIE_SERVICE_URL + current_config.MOVIE_SERVICE_PATH +
                             current_config.CREATE_PATH, data=jsonpickle.encode(payload))
         self.assertEqual(res.status_code, 201)
-        movie = jsonpickle.decode(res.content)
+        movie = Movie.from_json(res.content)
         requests.delete(current_config.MOVIE_SERVICE_URL + current_config.MOVIE_SERVICE_PATH + "/%s" % str(movie.id))
 
 
@@ -30,7 +30,7 @@ class TestMovieResource(unittest.TestCase):
         payload = {'name': 'test', 'description': 'test', 'length': 30}
         res = requests.post(current_config.MOVIE_SERVICE_URL + current_config.MOVIE_SERVICE_PATH +
                             current_config.CREATE_PATH, data=jsonpickle.encode(payload))
-        movie = jsonpickle.decode(res.content)
+        movie = Movie.from_json(res.content)
         res = requests.delete(current_config.MOVIE_SERVICE_URL + current_config.MOVIE_SERVICE_PATH +
                               "/%s" % str(movie.id))
         self.assertEqual(res.status_code, 204)

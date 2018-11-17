@@ -2,6 +2,7 @@ import unittest
 import jsonpickle
 import requests
 from config import current_config
+from ticket.domain.ticket import Ticket
 
 
 class TestTicketCreateResource(unittest.TestCase):
@@ -10,7 +11,7 @@ class TestTicketCreateResource(unittest.TestCase):
         res = requests.post(current_config.TICKET_SERVICE_URL + current_config.TICKET_SERVICE_PATH +
                             current_config.CREATE_PATH, data=jsonpickle.encode(payload))
         self.assertEqual(res.status_code, 201)
-        ticket = jsonpickle.decode(res.content)
+        ticket = Ticket.from_json(res.content)
         requests.delete(current_config.TICKET_SERVICE_URL + current_config.TICKET_SERVICE_PATH +
                         "/%s" % str(ticket.id))
 
@@ -30,7 +31,7 @@ class TestTicketResource(unittest.TestCase):
         payload = {'seance_id': '5bd897f8af13c78fe908cb98', 'seat_number': 2}
         res = requests.post(current_config.TICKET_SERVICE_URL + current_config.TICKET_SERVICE_PATH +
                             current_config.CREATE_PATH, data=jsonpickle.encode(payload))
-        ticket = jsonpickle.decode(res.content)
+        ticket = Ticket.from_json(res.content)
         res = requests.delete(current_config.TICKET_SERVICE_URL + current_config.TICKET_SERVICE_PATH +
                               "/%s" % ticket.id)
         self.assertEqual(res.status_code, 204)

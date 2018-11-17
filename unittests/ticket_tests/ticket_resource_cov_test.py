@@ -1,6 +1,6 @@
 import unittest
-import jsonpickle
 from ticket.rest_api.ticket_resource import TicketCreateResource, TicketListResource, TicketResource
+from ticket.domain.ticket import Ticket
 
 
 class TestTicketCreateResource(unittest.TestCase):
@@ -9,7 +9,7 @@ class TestTicketCreateResource(unittest.TestCase):
         res = tr.post()
         self.assertEqual(res.status_code, 201)
         tr1 = TicketResource()
-        seance = jsonpickle.decode(res.data)
+        seance = Ticket.from_json(res.data)
         tr1.delete(str(seance.id))
 
 
@@ -18,7 +18,7 @@ class TestTicketResource(unittest.TestCase):
         tr = TicketResource()
         tcr = TicketCreateResource()
         res = tcr.post()
-        ticket = jsonpickle.decode(res.data)
+        ticket = Ticket.from_json(res.data)
         res = tr.get(str(ticket.id))
         self.assertEqual(res.status_code, 200)
         tr.delete(str(ticket.id))
@@ -41,7 +41,7 @@ class TestTicketResource(unittest.TestCase):
         tr = TicketCreateResource()
         res = tr.post()
         tr1 = TicketResource()
-        seance = jsonpickle.decode(res.data)
+        seance = Ticket.from_json(res.data)
         res = tr1.delete(str(seance.id))
         self.assertEqual(res.status_code, 204)
 

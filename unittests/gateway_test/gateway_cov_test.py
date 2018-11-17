@@ -10,6 +10,10 @@ from movie.rest_api.movie_resource import MovieResource, MovieCreateResource
 from seance.rest_api.seance_resource import SeanceResource, SeanceCreateResource
 from ticket.rest_api.ticket_resource import TicketResource, TicketCreateResource
 from user.rest_api.user_resource import UserResource, UserCreateResource
+from movie.domain.movie import Movie
+from seance.domain.seance import Seance
+from ticket.domain.ticket import Ticket
+from user.domain.user import User
 
 
 class TestGatewayTicketResource(unittest.TestCase):
@@ -17,7 +21,7 @@ class TestGatewayTicketResource(unittest.TestCase):
         tr = TicketResource()
         tcr = TicketCreateResource()
         res = tcr.post()
-        ticket = jsonpickle.decode(res.data)
+        ticket = Ticket.from_json(res.data)
         gtr = GatewayTicketResource()
         res = gtr.get(str(ticket.id))
         self.assertEqual(res.status_code, 200)
@@ -43,7 +47,7 @@ class TestGatewaySeanceResource(unittest.TestCase):
         sr = SeanceResource()
         scr = SeanceCreateResource()
         res = scr.post()
-        seance = jsonpickle.decode(res.data)
+        seance = Seance.from_json(res.data)
         gsr = GatewaySeanceResource()
         res = gsr.get(str(seance.id))
         self.assertEqual(res.status_code, 200)
@@ -63,7 +67,7 @@ class TestGatewaySeanceCreateResource(unittest.TestCase):
         res = gsr.post()
         self.assertEqual(res.status_code, 201)
         sr = SeanceResource()
-        seance = jsonpickle.decode(res.data)
+        seance = Seance.from_json(res.data)
         sr.delete(str(seance.id))
 
 
@@ -79,7 +83,7 @@ class TestGatewayMovieResource(unittest.TestCase):
         mr = MovieResource()
         mcr = MovieCreateResource()
         res = mcr.post()
-        movie = jsonpickle.decode(res.data)
+        movie = Movie.from_json(res.data)
         gmr = GatewayMovieResource()
         res = gmr.get(str(movie.id))
         self.assertEqual(res.status_code, 200)
@@ -102,7 +106,7 @@ class TestGatewayMovieResource(unittest.TestCase):
     def test_delete_right(self):
         gmr = GatewayMovieCreateResource()
         res = gmr.post()
-        movie = jsonpickle.decode(res.data)
+        movie = Movie.from_json(res.data)
         gmr1 = GatewayMovieResource()
         res = gmr1.delete(str(movie.id))
         self.assertEqual(res.status_code, 204)
@@ -114,7 +118,7 @@ class TestGatewayMovieCreateResource(unittest.TestCase):
         res = gmr.post()
         self.assertEqual(res.status_code, 201)
         mr = MovieResource()
-        movie = jsonpickle.decode(res.data)
+        movie = Movie.from_json(res.data)
         mr.delete(str(movie.id))
 
 
@@ -130,7 +134,7 @@ class TestGatewayUserResource(unittest.TestCase):
         ur = UserResource()
         ucr = UserCreateResource()
         res = ucr.post()
-        user = jsonpickle.decode(res.data)
+        user = User.from_json(res.data)
         gur = GatewayUserResource()
         res = gur.get(str(user.id))
         self.assertEqual(res.status_code, 200)
@@ -154,9 +158,9 @@ class TestGatewayUserListResource(unittest.TestCase):
 class TestGatewayReturnTicket(unittest.TestCase):
     def test_delete_right(self):
         payload = {'seance_id': '5bd897f8af13c78fe908cb98', 'seat_number': 7}
-        res = requests.post(current_config.GATEWAY_URL + current_config.GATEWAY_PATH + '/buy_ticket',
+        res = requests.post(current_config.GATEWAY_URL + current_config.GATEWAY_PATH + '/tickets/buy',
                             data=jsonpickle.encode(payload))
-        ticket = jsonpickle.decode(res.content)
+        ticket = Ticket.from_json(res.content)
         ret_ticket = GatewayReturnTicket()
         res = ret_ticket.delete(str(ticket.id))
         self.assertEqual(res.status_code, 204)

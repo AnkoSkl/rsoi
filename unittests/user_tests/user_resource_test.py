@@ -2,6 +2,7 @@ import unittest
 import jsonpickle
 import requests
 from config import current_config
+from user.domain.user import User
 
 
 class TestUserCreateResource(unittest.TestCase):
@@ -10,7 +11,7 @@ class TestUserCreateResource(unittest.TestCase):
         res = requests.post(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
                             current_config.CREATE_PATH, data=jsonpickle.encode(payload))
         self.assertEqual(res.status_code, 201)
-        user = jsonpickle.decode(res.content)
+        user = User.from_json(res.content)
         requests.delete(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH + "/%s" % str(user.id))
 
 
@@ -29,7 +30,7 @@ class TestUserResource(unittest.TestCase):
         payload = {'name': 'test', 'password': 'test'}
         res = requests.post(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
                             current_config.CREATE_PATH, data=jsonpickle.encode(payload))
-        user = jsonpickle.decode(res.content)
+        user = User.from_json(res.content)
         res = requests.delete(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
                               "/%s" % str(user.id))
         self.assertEqual(res.status_code, 204)
