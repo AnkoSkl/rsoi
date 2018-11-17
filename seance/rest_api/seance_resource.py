@@ -22,7 +22,7 @@ class SeanceResource(Resource):
         response = app.make_response("")
         response.status_code = 200
         response.content_type = "application/json"
-        response.data = jsonpickle.encode(seance)
+        response.data = seance.to_json() #jsonpickle.encode(seance)
         app.logger.info('Запрос на получение информации о сеансе с идентификатором %s успешно обработан' % seance_id)
         return response
 
@@ -42,7 +42,7 @@ class SeanceResource(Resource):
         if payload["status"] == "buy":
             app.logger.info('Покупка билета')
             res = repo.get_a_seat(seance_id, payload["seat_number"])
-            if res == True:
+            if res:
                 response = app.make_response("")
                 response.content_type = "application/json"
                 response.status_code = 201
@@ -56,7 +56,7 @@ class SeanceResource(Resource):
         else:
             app.logger.info('Возврат билета')
             res = repo.free_a_seat(seance_id, payload["seat_number"])
-            if res == True:
+            if res:
                 response = app.make_response("")
                 response.content_type = "application/json"
                 response.status_code = 201
@@ -69,7 +69,7 @@ class SeanceResource(Resource):
                                 % seance_id)
 
         seance = repo.get(seance_id)
-        response.data = jsonpickle.encode(seance)
+        response.data = seance.to_json()  #jsonpickle.encode(seance)
         return response
 
 
@@ -85,7 +85,7 @@ class SeanceCreateResource(Resource):
         response = app.make_response("")
         response.status_code = 201
         response.content_type = "application/json"
-        response.data = jsonpickle.encode(seance)
+        response.data = seance.to_json()  #jsonpickle.encode(seance)
         app.logger.info('Сеанс с идентификатором %s успешно создан' % seance_id)
         return response
 
@@ -103,9 +103,12 @@ class SeanceListResource(Resource):
             args = {'page': 1, 'page_size': 5}
         app.logger.info('Номер страницы: %d; количество сеансов на странице: %d' % (args['page'], args['page_size']))
         seances_list = repo.read_paginated(page_number=args['page'], page_size=args['page_size'])
+        seances = ''
+        for seance in seances_list:
+            seances += seance.to_json() + '\n'
         response = app.make_response("")
         response.status_code = 200
         response.content_type = "application/json"
-        response.data = jsonpickle.encode(seances_list)
+        response.data = seances #jsonpickle.encode(seances_list)
         app.logger.info('Запрос на получение списка сеансов успешно обработан')
         return response
