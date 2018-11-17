@@ -76,4 +76,3 @@ class TicketListResource(Resource):
         response.data = tickets
         app.logger.info('Запрос на получение списка билетов успешно обработан')
         return response
-    
