@@ -16,11 +16,12 @@ class Seance:
                    self.seats == other.seats
 
     def to_json(self):
-        dictr = {'id': str(self.id), 'movie_id': str(self.movie_id), 'datetime': self.date_time, 'seats': self.seats}
+        dictr = {'seance_id': str(self.id), 'movie_id': str(self.movie_id), 'datetime': self.date_time,
+                 'seats': self.seats}
         return json.dumps(dictr)
 
     @staticmethod
     def from_json(json_object):
         decoded_object = json.loads(json_object)
-        return Seance(seance_id=decoded_object["id"], movie_id=decoded_object["movie_id"],
+        return Seance(seance_id=decoded_object["seance_id"], movie_id=decoded_object["movie_id"],
                       date_time=decoded_object["datetime"], seats=decoded_object["seats"])

@@ -16,11 +16,11 @@ class Movie:
                    self.description == other.description
 
     def to_json(self):
-        dictr = {'id': str(self.id), 'name': self.name, 'length': self.length, 'description': self.description}
+        dictr = {'movie_id': str(self.id), 'name': self.name, 'length': self.length, 'description': self.description}
         return json.dumps(dictr)
 
     @staticmethod
     def from_json(json_object):
         decoded_object = json.loads(json_object)
-        return Movie(movie_id=decoded_object["id"], name=decoded_object["name"],
+        return Movie(movie_id=decoded_object["movie_id"], name=decoded_object["name"],
                      description=decoded_object["description"], length=decoded_object["length"])
