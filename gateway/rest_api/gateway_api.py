@@ -283,6 +283,8 @@ class GatewayBuyTicket(Resource):
         if response.status_code == 201:
             app.logger.info('Покупка билета для пользователя успешно произведена')
         else:
+            result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                    response=response.content)
             payload1['status'] = 'return'
             requests.patch(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH + "/" +
                            payload["seance_id"], jsonpickle.encode(payload1))
