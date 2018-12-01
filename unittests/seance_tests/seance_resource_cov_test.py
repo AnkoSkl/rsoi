@@ -1,27 +1,26 @@
 import unittest
 from seance.rest_api.seance_resource import SeanceResource, SeanceListResource, SeanceCreateResource
 from seance.domain.seance import Seance
+from unittest.mock import patch
 
 
 class TestSeanceCreateResource(unittest.TestCase):
-    def test_post(self):
+    @patch('seance.rest_api.seance_resource.SeanceRepository')
+    def test_post(self, mock_seance):
+        mock_seance.return_value.create.return_value = "123"
         sr = SeanceCreateResource()
         res = sr.post()
         self.assertEqual(res.status_code, 201)
-        sr1 = SeanceResource()
-        seance = Seance.from_json(res.data)
-        sr1.delete(str(seance.id))
 
 
 class TestSeanceResource(unittest.TestCase):
-    def test_get_right(self):
-        scr = SeanceCreateResource()
+    @patch('seance.rest_api.seance_resource.SeanceRepository')
+    def test_get_right(self, mock_seance):
+        seance = Seance(seance_id="123", movie_id="012", date_time="01.01.2018", seats=[True])
+        mock_seance.return_value.get.return_value = seance
         sr = SeanceResource()
-        res = scr.post()
-        seance = Seance.from_json(res.data)
-        res = sr.get(str(seance.id))
+        res = sr.get("123")
         self.assertEqual(res.status_code, 200)
-        sr.delete(str(seance.id))
 
     def test_get_error(self):
         sr = SeanceResource()
@@ -37,17 +36,28 @@ class TestSeanceResource(unittest.TestCase):
         except:
             self.assertTrue(True)
 
-    def test_delete_right(self):
-        sr = SeanceCreateResource()
-        res = sr.post()
-        sr1 = SeanceResource()
-        seance = Seance.from_json(res.data)
-        res = sr1.delete(str(seance.id))
+    @patch('seance.rest_api.seance_resource.SeanceRepository')
+    def test_delete_right(self, mock_seance):
+        mock_seance.return_value.delete.return_value = ''
+        sr = SeanceResource()
+        res = sr.delete("123")
         self.assertEqual(res.status_code, 204)
+
+    @patch('seance.rest_api.seance_resource.SeanceRepository')
+    def test_patch_right(self, mock_seance):
+        mock_seance.return_value.get_a_seat.return_value = True
+        seance = Seance(seance_id="123", movie_id="012", date_time="01.01.2018", seats=[True])
+        mock_seance.return_value.get.return_value = seance
+        sr = SeanceResource()
+        res = sr.patch('123')
+        self.assertEqual(res.status_code, 201)
 
 
 class TestSeanceListResource(unittest.TestCase):
-    def test_get(self):
+    @patch('seance.rest_api.seance_resource.SeanceRepository')
+    def test_get(self, mock_seance):
+        seances = []
+        mock_seance.return_value.read_paginated_return_value = seances
         sr = SeanceListResource()
         res = sr.get()
         self.assertEqual(res.status_code, 200)

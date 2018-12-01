@@ -5,10 +5,7 @@ import jsonpickle
 import flask
 
 
-repo = SeanceRepository()
-
-
-def abort_if_seance_doesnt_exist(seance_id):
+def abort_if_seance_doesnt_exist(seance_id, repo):
     if not repo.exists(seance_id):
         app.logger.error('Сеанса с идентификатором %s не существует!', seance_id)
         abort(404, message="Seance {} doesn't exist".format(seance_id))
@@ -16,8 +13,9 @@ def abort_if_seance_doesnt_exist(seance_id):
 
 class SeanceResource(Resource):
     def get(self, seance_id):
+        repo = SeanceRepository()
         app.logger.info('Получен запрос на получение информации о сеансе с идентификатором %s' % seance_id)
-        abort_if_seance_doesnt_exist(seance_id)
+        abort_if_seance_doesnt_exist(seance_id, repo)
         seance = repo.get(seance_id)
         response = app.make_response("")
         response.status_code = 200
@@ -27,8 +25,9 @@ class SeanceResource(Resource):
         return response
 
     def delete(self, seance_id):
+        repo = SeanceRepository()
         app.logger.info('Получен запрос на удаление сеанса с идентификатором %s' % seance_id)
-        abort_if_seance_doesnt_exist(seance_id)
+        abort_if_seance_doesnt_exist(seance_id, repo)
         repo.delete(seance_id)
         response = app.make_response("Seance %s deleted successfully" % seance_id)
         response.status_code = 204
@@ -36,9 +35,13 @@ class SeanceResource(Resource):
         return response
 
     def patch(self, seance_id):
+        repo = SeanceRepository()
         app.logger.info('Получен запрос на покупку/возврат билета на сеанс с идентификатором %s' % seance_id)
-        abort_if_seance_doesnt_exist(seance_id)
-        payload = jsonpickle.decode(flask.request.data)
+        abort_if_seance_doesnt_exist(seance_id, repo)
+        try:
+            payload = jsonpickle.decode(flask.request.data)
+        except:
+            payload = {'status': 'buy', 'seat_number': 1}
         if payload["status"] == "buy":
             app.logger.info('Покупка билета')
             res = repo.get_a_seat(seance_id, payload["seat_number"])
@@ -69,12 +72,13 @@ class SeanceResource(Resource):
                                 % seance_id)
 
         seance = repo.get(seance_id)
-        response.data = seance.to_json()  #jsonpickle.encode(seance)
+        response.data = seance.to_json()
         return response
 
 
 class SeanceCreateResource(Resource):
     def post(self):
+        repo = SeanceRepository()
         app.logger.info('Получен запрос на создание сеанса')
         try:
             payload = jsonpickle.decode(flask.request.data)
@@ -96,6 +100,7 @@ class SeanceListResource(Resource):
     parser.add_argument("page_size", type=int, default=5)
 
     def get(self):
+        repo = SeanceRepository()
         app.logger.info('Получен запрос на получение списка сеансов')
         try:
             args = self.parser.parse_args(strict=True)
@@ -109,6 +114,6 @@ class SeanceListResource(Resource):
         response = app.make_response("")
         response.status_code = 200
         response.content_type = "application/json"
-        response.data = seances #jsonpickle.encode(seances_list)
+        response.data = seances
         app.logger.info('Запрос на получение списка сеансов успешно обработан')
         return response
