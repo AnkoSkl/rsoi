@@ -5,10 +5,7 @@ import jsonpickle
 import flask
 
 
-repo = TicketRepository()
-
-
-def abort_if_seance_doesnt_exist(ticket_id):
+def abort_if_seance_doesnt_exist(ticket_id, repo):
     if not repo.exists(ticket_id):
         app.logger.error('Билета с идентификатором %s не существует!', ticket_id)
         abort(404, message="Ticket {} doesn't exist".format(ticket_id))
@@ -16,8 +13,9 @@ def abort_if_seance_doesnt_exist(ticket_id):
 
 class TicketResource(Resource):
     def get(self, ticket_id):
+        repo = TicketRepository()
         app.logger.info('Получен запрос на получение информации о билете с идентификатором %s' % ticket_id)
-        abort_if_seance_doesnt_exist(ticket_id)
+        abort_if_seance_doesnt_exist(ticket_id, repo)
         ticket = repo.get(ticket_id)
         response = app.make_response("")
         response.status_code = 200
@@ -28,8 +26,9 @@ class TicketResource(Resource):
         return response
 
     def delete(self, ticket_id):
+        repo = TicketRepository()
         app.logger.info('Получен запрос на удаление билета с идентификатором %s' % ticket_id)
-        abort_if_seance_doesnt_exist(ticket_id)
+        abort_if_seance_doesnt_exist(ticket_id, repo)
         repo.delete(ticket_id)
         response = app.make_response("Ticket %s deleted successfully" % ticket_id)
         response.status_code = 204
@@ -39,6 +38,7 @@ class TicketResource(Resource):
 
 class TicketCreateResource(Resource):
     def post(self):
+        repo = TicketRepository()
         app.logger.info('Получен запрос на создание (покупку) билета')
         try:
             payload = jsonpickle.decode(flask.request.data)
@@ -60,6 +60,7 @@ class TicketListResource(Resource):
     parser.add_argument("page_size", type=int, default=5)
 
     def get(self):
+        repo = TicketRepository()
         app.logger.info('Получен запрос на получение списка билетов')
         try:
             args = self.parser.parse_args(strict=True)
