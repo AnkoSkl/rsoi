@@ -1,27 +1,26 @@
 import unittest
 from user.rest_api.user_resource import UserResource, UserListResource, UserCreateResource
 from user.domain.user import User
+from unittest.mock import patch
 
 
 class TestUserCreateResource(unittest.TestCase):
-    def test_post(self):
+    @patch('user.rest_api.user_resource.UserRepository')
+    def test_post(self, mock_user):
+        mock_user.return_value.create.return_value = "123"
         ur = UserCreateResource()
         res = ur.post()
         self.assertEqual(res.status_code, 201)
-        ur1 = UserResource()
-        user = User.from_json(res.data)
-        ur1.delete(str(user.id))
 
 
 class TestUserResource(unittest.TestCase):
-    def test_get_right(self):
+    @patch('user.rest_api.user_resource.UserRepository')
+    def test_get_right(self, mock_user):
+        user = User(user_id="123", ticket_ids="012", name="name", password="pass")
+        mock_user.return_value.get.return_value = user
         ur = UserResource()
-        ucr = UserCreateResource()
-        res = ucr.post()
-        user = User.from_json(res.data)
-        res = ur.get(str(user.id))
+        res = ur.get("123")
         self.assertEqual(res.status_code, 200)
-        ur.delete(str(user.id))
 
     def test_get_error(self):
         ur = UserResource()
@@ -37,17 +36,28 @@ class TestUserResource(unittest.TestCase):
         except:
             self.assertTrue(True)
 
-    def test_delete_right(self):
-        ur = UserCreateResource()
-        res = ur.post()
+    @patch('user.rest_api.user_resource.UserRepository')
+    def test_delete_right(self, mock_user):
+        mock_user.return_value.delete.return_value = ''
         ur1 = UserResource()
-        user = User.from_json(res.data)
-        res = ur1.delete(str(user.id))
+        res = ur1.delete("123")
         self.assertEqual(res.status_code, 204)
+
+    @patch('user.rest_api.user_resource.UserRepository')
+    def test_patch_right(self, mock_user):
+        mock_user.return_value.assign_ticket.return_value = True
+        user = User(user_id="123", ticket_ids="012", name="name", password="pass")
+        mock_user.return_value.get.return_value = user
+        ur = UserResource()
+        res = ur.patch("123")
+        self.assertEqual(res.status_code, 201)
 
 
 class TestSeanceListResource(unittest.TestCase):
-    def test_get(self):
+    @patch('user.rest_api.user_resource.UserRepository')
+    def test_get(self, mock_user):
+        users = []
+        mock_user.return_value.read_paginated.return_value = users
         ur = UserListResource()
         res = ur.get()
         self.assertEqual(res.status_code, 200)

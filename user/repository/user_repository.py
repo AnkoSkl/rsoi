@@ -48,7 +48,6 @@ class UserRepository:
             user = Users.query.get(user_id)
             ticket_ids = jsonpickle.decode(user.ticket_ids)
             ticket_ids.append(ticket_id)
-            #ticket_ids = user.ticket_ids + tuple(str(ticket_id))
             user.ticket_ids = jsonpickle.encode(ticket_ids)
             user.save()
             return True

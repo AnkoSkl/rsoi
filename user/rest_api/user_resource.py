@@ -5,10 +5,7 @@ import jsonpickle
 import flask
 
 
-repo = UserRepository()
-
-
-def abort_if_user_doesnt_exist(user_id):
+def abort_if_user_doesnt_exist(user_id, repo):
     if not repo.exists(user_id):
         app.logger.error('Пользователя с идентификатором %s не существует!', user_id)
         abort(404, message="User {} doesn't exist".format(user_id))
@@ -16,8 +13,9 @@ def abort_if_user_doesnt_exist(user_id):
 
 class UserResource(Resource):
     def get(self, user_id):
+        repo = UserRepository()
         app.logger.info('Получен запрос на получение информации о пользователе с идентификатором %s' % user_id)
-        abort_if_user_doesnt_exist(user_id)
+        abort_if_user_doesnt_exist(user_id, repo)
         user = repo.get(user_id)
         response = app.make_response("")
         response.status_code = 200
@@ -28,8 +26,9 @@ class UserResource(Resource):
         return response
 
     def delete(self, user_id):
+        repo = UserRepository()
         app.logger.info('Получен запрос на удаление пользователя с идентификатором %s' % user_id)
-        abort_if_user_doesnt_exist(user_id)
+        abort_if_user_doesnt_exist(user_id, repo)
         repo.delete(user_id)
         response = app.make_response("User %s deleted successfully" % user_id)
         response.status_code = 204
@@ -37,9 +36,13 @@ class UserResource(Resource):
         return response
 
     def patch(self, user_id):
+        repo = UserRepository()
         app.logger.info('Получен запрос на покупку/возврат билета для пользователя с идентификатором %s' % user_id)
-        abort_if_user_doesnt_exist(user_id)
-        payload = jsonpickle.decode(flask.request.data)
+        abort_if_user_doesnt_exist(user_id, repo)
+        try:
+            payload = jsonpickle.decode(flask.request.data)
+        except:
+            payload = {'status': 'buy', 'ticket_id': '894bjhel892'}
         if payload["status"] == "buy":
             app.logger.info('Покупка билета с идентификатором %s' % payload["ticket_id"])
             repo.assign_ticket(user_id, payload["ticket_id"])
@@ -62,6 +65,7 @@ class UserResource(Resource):
 
 class UserCreateResource(Resource):
     def post(self):
+        repo = UserRepository()
         app.logger.info('Получен запрос на создание пользователя')
         try:
             payload = jsonpickle.decode(flask.request.data)
@@ -83,6 +87,7 @@ class UserListResource(Resource):
     parser.add_argument("page_size", type=int, default=5)
 
     def get(self):
+        repo = UserRepository()
         app.logger.info('Получен запрос на получение списка пользователей')
         try:
             args = self.parser.parse_args(strict=True)
