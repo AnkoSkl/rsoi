@@ -1,27 +1,27 @@
 import unittest
 from movie.rest_api.movie_resource import MovieResource, MovieCreateResource, MovieListResource
 from movie.domain.movie import Movie
+from unittest.mock import patch
 
 
 class TestMovieCreateResource(unittest.TestCase):
-    def test_post(self):
+    @patch('movie.rest_api.movie_resource.MovieRepository')
+    def test_post(self, mock_movie):
+        movie = Movie(name='movie', description='description', length=60, movie_id="123")
+        mock_movie.return_value.create.return_value = movie
         mr = MovieCreateResource()
         res = mr.post()
         self.assertEqual(res.status_code, 201)
-        movie = Movie.from_json(res.data)
-        mr1 = MovieResource()
-        mr1.delete(str(movie.id))
 
 
 class TestMovieResource(unittest.TestCase):
-    def test_get_right(self):
+    @patch('movie.rest_api.movie_resource.MovieRepository')
+    def test_get_right(self, mock_movie):
+        movie = Movie(name='a', description='b', length=90, movie_id="123")
+        mock_movie.return_value.get.return_value = movie
         mr1 = MovieResource()
-        mr2 = MovieCreateResource()
-        res = mr2.post()
-        movie = Movie.from_json(res.data)
-        res = mr1.get(str(movie.id))
+        res = mr1.get('123')
         self.assertEqual(res.status_code, 200)
-        mr1.delete(str(movie.id))
 
     def test_get_error(self):
         mr = MovieResource()
@@ -37,17 +37,21 @@ class TestMovieResource(unittest.TestCase):
         except:
             self.assertTrue(True)
 
-    def test_delete_right(self):
-        mr = MovieCreateResource()
-        res = mr.post()
-        movie = Movie.from_json(res.data)
+    @patch('movie.rest_api.movie_resource.MovieRepository')
+    def test_delete_right(self, mock_movie):
+        mock_movie.return_value.delete.return_value = ''
         mr1 = MovieResource()
-        res = mr1.delete(str(movie.id))
+        res = mr1.delete('123')
         self.assertEqual(res.status_code, 204)
 
 
 class TestMovieListResource(unittest.TestCase):
-    def test_get(self):
+    @patch('movie.rest_api.movie_resource.MovieRepository')
+    def test_get(self, mock_movie):
+        movies = []
+        movie = Movie(name='movie', description='description', length=60, movie_id="123")
+        movies.append(movie)
+        mock_movie.return_value.read_paginated.return_value = movies
         mr = MovieListResource()
         res = mr.get()
         self.assertEqual(res.status_code, 200)

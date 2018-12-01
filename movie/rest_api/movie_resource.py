@@ -5,10 +5,7 @@ import jsonpickle
 import flask
 
 
-repo = MovieRepository()
-
-
-def abort_if_movie_doesnt_exist(movie_id):
+def abort_if_movie_doesnt_exist(movie_id, repo):
     if not repo.exists(movie_id):
         app.logger.error('Фильма с идентификатором %s не существует!', movie_id)
         abort(404, message="Movie {} doesn't exist".format(movie_id))
@@ -16,8 +13,9 @@ def abort_if_movie_doesnt_exist(movie_id):
 
 class MovieResource(Resource):
     def get(self, movie_id):
+        repo = MovieRepository()
         app.logger.info('Получен запрос на получение информации о фильме с идентификатором %s' % movie_id)
-        abort_if_movie_doesnt_exist(movie_id)
+        abort_if_movie_doesnt_exist(movie_id, repo)
         movie = repo.get(movie_id)
         response = app.make_response("")
         response.status_code = 200
@@ -27,8 +25,9 @@ class MovieResource(Resource):
         return response
 
     def delete(self, movie_id):
+        repo = MovieRepository()
         app.logger.info('Получен запрос на удаление фильма с идентификатором %s' % movie_id)
-        abort_if_movie_doesnt_exist(movie_id)
+        abort_if_movie_doesnt_exist(movie_id, repo)
         repo.delete(movie_id)
         response = app.make_response("Movie %s deleted successfully" % movie_id)
         response.status_code = 204
@@ -38,11 +37,12 @@ class MovieResource(Resource):
 
 class MovieCreateResource(Resource):
     def post(self):
+        repo = MovieRepository()
         app.logger.info('Получен запрос на создание фильма')
         try:
             payload = jsonpickle.decode(flask.request.data)
         except:
-            payload = {'name': 'test', 'description': 'test', 'length': 60}
+            payload = {'name': '1', 'description': '2', 'length': 60}
         movie_id = repo.create(payload["name"], payload["description"], payload["length"])
         movie = repo.get(movie_id)
         response = app.make_response("")
@@ -59,6 +59,7 @@ class MovieListResource(Resource):
     parser.add_argument("page_size", type=int, default=5)
 
     def get(self):
+        repo = MovieRepository()
         app.logger.info('Получен запрос на получение списка фильмов')
         try:
             args = self.parser.parse_args(strict=True)

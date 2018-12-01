@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 import jsonpickle
 import requests
 from config import current_config
