@@ -7,8 +7,7 @@ from unittest.mock import patch
 class TestMovieCreateResource(unittest.TestCase):
     @patch('movie.rest_api.movie_resource.MovieRepository')
     def test_post(self, mock_movie):
-        movie = Movie(name='movie', description='description', length=60, movie_id="123")
-        mock_movie.return_value.create.return_value = movie
+        mock_movie.return_value.create.return_value = "123"
         mr = MovieCreateResource()
         res = mr.post()
         self.assertEqual(res.status_code, 201)
