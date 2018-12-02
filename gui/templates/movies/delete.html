@@ -1,10 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends "layout.html" %}
+{% block title %}Информация о фильме{% endblock %}
+{% block body %}
+    <form action="" method="post">
+        <p>
+            <input type=text placeholder="Идентификатор" name=movie_id value="{{ request.form.movie_id }}">
+        </p>
+        <p>
+            <input type="submit" value="Удалить">
+        </p>
+    </form>
+{% endblock %}

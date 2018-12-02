@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, session, redirect, url_for, \
      request, flash, g, jsonify, abort, Markup
-from gui.utils import do_create_movie, do_get_movie
+from gui.utils import do_create_movie, do_get_movie, do_delete_movie
 import json
 
 mod = Blueprint('movies', __name__)
@@ -42,7 +42,7 @@ def create():
         if result.success:
             if result.response.status_code == 201:
                 flash('Фильм успешно добавлен', "info")
-                response = redirect(url_for(result.redirect))
+                response = redirect('movies.create')
                 return response
             else:
                 flash(result.response.content.decode('utf-8'), "error")
@@ -75,16 +75,30 @@ def get():
                 flash(result.error, "error")
                 return redirect(url_for('movies.get'))
 
-            #movie = {"movie_id" : "1", "name" : "AAAA", "description" : "AAA!!!!", "length" : "123"}
-            #return render_template("/movies/get.html", movie=movie, movie_found=True)
 
-
-@mod.route('/movies/delete')
+@mod.route('/movies/delete', methods=['GET', 'POST'])
 def delete():
     if request.method == 'GET':
-        return render_template("/movies/create.html")
-    elif request.method == "POST":
-        pass
+        return render_template("/movies/delete.html")
+    else:
+        if 'movie_id' not in request.form or request.form['movie_id'] == '':
+            flash('Идентификатор не задан', "error")
+            return redirect(url_for('movies.delete'))
+        else:
+            movie_id = request.form["movie_id"]
+            result = do_delete_movie(movie_id)
+
+            if result.success:
+                if result.response.status_code == 204:
+                    flash('Фильм успешно удален', "info")
+                    response = redirect(url_for('movies.delete'))
+                    return response
+                else:
+                    flash("Фильм не найден", "error")
+                    return redirect(url_for('movies.delete'))
+            else:
+                flash(result.error, "error")
+                return redirect(url_for('movies.delete'))
 
 
 @mod.route('/movies/get_all')
