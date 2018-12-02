@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, session, redirect, url_for, \
      request, flash, g, jsonify, abort, Markup
-from gui.utils import do_create_movie, do_get_movie, do_delete_movie
+from gui.utils import do_create_movie, do_get_movie, do_delete_movie, do_get_paginated_movie
 import json
 
 mod = Blueprint('movies', __name__)
@@ -52,16 +52,16 @@ def create():
             return redirect(url_for('movies.create'), "error")
 
 
-@mod.route('/movies/get')
+@mod.route('/movies/get', methods=['GET', 'POST'])
 def get():
     if request.method == 'GET':
-        if 'movie_id' not in request.args:
-            return render_template("/movies/get.html", movie_found=False)
-        elif request.args['movie_id'] == '':
+        return render_template("/movies/get.html", movie_found = False)
+    else:
+        if 'movie_id' not in request.form or request.form['movie_id'] == '':
             flash('Идентификатор не задан', "error")
             return redirect(url_for('movies.get'))
         else:
-            movie_id = request.args["movie_id"]
+            movie_id = request.form["movie_id"]
             result = do_get_movie(movie_id)
 
             if result.success:
@@ -104,6 +104,15 @@ def delete():
 @mod.route('/movies/get_all')
 def get_all():
     if request.method == 'GET':
-        return render_template("/movies/create.html")
-    elif request.method == "POST":
-        pass
+        result = do_get_paginated_movie()
+
+        if result.success:
+            if result.response.status_code == 200:
+                movie = json.loads(result.response.content)
+                return render_template("/movies/get.html", movie=movie, movie_found=True)
+            else:
+                flash("Фильм не найден", "error")
+                return redirect(url_for('movies.get'))
+        else:
+            flash(result.error, "error")
+            return redirect(url_for('movies.get'))

@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block title %}Информация о фильме{% endblock %}
 {% block body %}
-    <form action="" method="get">
+    <form action="" method="post">
         <p>
             <input type=text placeholder="Идентификатор" name=movie_id value="{{ request.form.movie_id }}">
         </p>

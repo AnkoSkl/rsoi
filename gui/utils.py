@@ -45,6 +45,13 @@ def do_get_movie(movie_id):
 
 
 @request_handler(redirect_url='movies.index')
+def do_get_paginated_movie(page, page_size):
+    result = gateway_api_request(current_config.MOVIE_SERVICE_PATH, 'GET',
+                                 params=(('page', page), ('page_size', page_size)))
+    return result
+
+
+@request_handler(redirect_url='movies.index')
 def do_delete_movie(movie_id):
     result = gateway_api_request(current_config.MOVIE_SERVICE_PATH + '/' + movie_id, 'DELETE')
     return result
