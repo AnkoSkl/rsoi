@@ -15,3 +15,27 @@ def create():
         return render_template("/movies/create.html")
     elif request.method == "POST":
         pass
+
+
+@mod.route('/movies/get')
+def get():
+    if request.method == 'GET':
+        return render_template("/movies/create.html")
+    elif request.method == "POST":
+        pass
+
+
+@mod.route('/movies/delete')
+def delete():
+    if request.method == 'GET':
+        return render_template("/movies/create.html")
+    elif request.method == "POST":
+        pass
+
+
+@mod.route('/movies/get_all')
+def get_all():
+    if request.method == 'GET':
+        return render_template("/movies/create.html")
+    elif request.method == "POST":
+        pass

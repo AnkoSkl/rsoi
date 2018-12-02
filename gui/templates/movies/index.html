@@ -1,10 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends "layout.html" %}
+{% block body %}
+    <p class=nav>
+    <a href="{{ url_for('movies.create') }}">Добавить новый фильм</a>
+    <p class=nav>
+    <a href="{{ url_for('movies.get') }}">Посмотреть подробную информацию о фильме</a>
+    <p class=nav>
+    <a href="{{ url_for('movies.delete') }}">Удалить фильм</a>
+    <p class=nav>
+    <a href="{{ url_for('movies.get_all') }}">Посмотреть список всех фильмов</a>
+{% endblock %}
