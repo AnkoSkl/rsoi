@@ -24,7 +24,7 @@ blockquote   { margin: 0; font-style: italic; color: #444; }
 .nav a       { font-style: italic; }
 .backnav     { float: right; color: #444; font-style: italic;
                margin: 5px 0 0 0; font-size: 0.9em; }
-.message     { background: #DEEBF3; color: #004B6B; padding: 5px 30px;
+.message     { background: #FF0000; color: #004B6B; padding: 5px 30px;
                margin: 10px -30px; }
 .actions     { margin-top: 0; }
 table        { border: 1px solid black; border-collapse: collapse;

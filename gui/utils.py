@@ -38,6 +38,12 @@ def do_create_movie(name, description, length):
     return result
 
 
+@request_handler(redirect_url='movies.index')
+def do_get_movie(movie_id):
+    result = gateway_api_request(current_config.MOVIE_SERVICE_PATH + '/' + movie_id, 'GET')
+    return result
+
+
 def gateway_api_request(service_path, method, data=None, params=None, cookies=None):
     if method == 'GET':
         return requests.get(current_config.GATEWAY_SERVICE_URL + current_config.GATEWAY_SERVICE_PATH

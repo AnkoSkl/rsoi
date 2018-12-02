@@ -1,10 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends "layout.html" %}
+{% block title %}Информация о фильме{% endblock %}
+{% block body %}
+    <form action="" method="get">
+        <p>
+            <input type=text placeholder="Идентификатор" name=movie_id value="{{ request.form.movie_id }}">
+        </p>
+        <p>
+            <input type="submit" value="Найти">
+        </p>
+        {% if movie_found %}
+            <table>
+            <tr>
+                <th> Идентификатор </th>
+                <td> {{ movie["movie_id"] }}</td>
+            </tr>
+            <tr>
+                <th> Название </th>
+                <td> {{ movie["name"] }}</td>
+            </tr>
+            <tr>
+                <th> Описание </th>
+                <td> {{ movie["description"] }}</td>
+            </tr>
+            <tr>
+                <th> Длительность </th>
+                <td> {{ movie["length"] }}</td>
+            </tr>
+            </table>
+        {% endif %}
+    </form>
+{% endblock %}

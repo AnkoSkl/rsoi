@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, session, redirect, url_for, \
      request, flash, g, jsonify, abort, Markup
-from gui.utils import do_create_movie
+from gui.utils import do_create_movie, do_get_movie
+import json
 
 mod = Blueprint('movies', __name__)
 
@@ -17,15 +18,15 @@ def create():
     else:
         failed = False
         if 'name' not in request.form or request.form['name']=='':
-            flash('Имя не задано')
+            flash('Имя не задано', "error")
             failed = True
 
         if 'description' not in request.form or request.form['description']=='':
-            flash('Описание не задано')
+            flash('Описание не задано', "error")
             failed = True
 
         if 'length' not in request.form or request.form['length']=='':
-            flash('Длительность не задана')
+            flash('Длительность не задана', "error")
             failed = True
 
         if failed:
@@ -34,26 +35,48 @@ def create():
         name = request.form['name']
         description = request.form['description']
         length = request.form['length']
+        if not isinstance(length, int):
+            flash('Длительность должна быть введена в минутах', 'error')
+            return redirect(url_for('movies.create'))
         result = do_create_movie(name, description, length)
         if result.success:
             if result.response.status_code == 201:
-                flash(Markup('Фильм успешно добавлен'))
+                flash('Фильм успешно добавлен', "info")
                 response = redirect(url_for(result.redirect))
                 return response
             else:
-                flash(result.response.content.decode('utf-8'))
+                flash(result.response.content.decode('utf-8'), "error")
                 return redirect(url_for('movies.create'))
         else:
             flash(result.error)
-            return redirect(url_for('movies.create'))
+            return redirect(url_for('movies.create'), "error")
 
 
 @mod.route('/movies/get')
 def get():
     if request.method == 'GET':
-        return render_template("/movies/create.html")
-    elif request.method == "POST":
-        pass
+        if 'movie_id' not in request.args:
+            return render_template("/movies/get.html", movie_found=False)
+        elif request.args['movie_id'] == '':
+            flash('Идентификатор не задан', "error")
+            return redirect(url_for('movies.get'))
+        else:
+            movie_id = request.args["movie_id"]
+            result = do_get_movie(movie_id)
+
+            if result.success:
+                if result.response.status_code == 200:
+                    movie = json.loads(result.response.content)
+                    return render_template("/movies/get.html", movie=movie, movie_found=True)
+                else:
+                    flash("Фильм не найден", "error")
+                    return redirect(url_for('movies.get'))
+            else:
+                flash(result.error, "error")
+                return redirect(url_for('movies.get'))
+
+            #movie = {"movie_id" : "1", "name" : "AAAA", "description" : "AAA!!!!", "length" : "123"}
+            #return render_template("/movies/get.html", movie=movie, movie_found=True)
 
 
 @mod.route('/movies/delete')
