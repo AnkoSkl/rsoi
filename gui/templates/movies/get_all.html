@@ -1,10 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends "layout.html" %}
+{% block title %}Информация о фильме{% endblock %}
+{% block body %}
+    <form action="" method="get">
+            {% for item in movies %}
+            <table>
+            <tr>
+                <th> Идентификатор </th>
+                <td> {{ item["movie_id"] }}</td>
+            </tr>
+            <tr>
+                <th> Название </th>
+                <td> {{ item["name"] }}</td>
+            </tr>
+            <tr>
+                <th> Описание </th>
+                <td> {{ item["description"] }}</td>
+            </tr>
+            <tr>
+                <th> Длительность </th>
+                <td> {{ item["length"] }}</td>
+            </tr>
+            </table>
+            {% endfor %}
+            {% if prev_url %}
+                <a href="{{ url_for('movies.get_all', page=prev_page) }}">Предыдущие фильмы</a>
+            {% endif %}
+            {% if next_url %}
+                <a href="{{ url_for('movies.get_all', page=next_page) }}" >Следующие фильмы</a>
+            {% endif %}
+    </form>
+{% endblock %}

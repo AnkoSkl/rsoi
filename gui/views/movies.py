@@ -104,15 +104,29 @@ def delete():
 @mod.route('/movies/get_all')
 def get_all():
     if request.method == 'GET':
-        result = do_get_paginated_movie()
-
+        if 'page' not in request.args:
+            return redirect(url_for('movies.get_all', page=1))
+        page = request.args.get('page', 1, type=int)
+        result = do_get_paginated_movie(page, 10)
         if result.success:
             if result.response.status_code == 200:
-                movie = json.loads(result.response.content)
-                return render_template("/movies/get.html", movie=movie, movie_found=True)
+                movies_obj = result.response.content
+                movies_str = (str(movies_obj)).split('\\n')
+                n = len(movies_str)
+                movies_str.remove(movies_str[0])
+                n = n-1
+                movies_str[n-1] = movies_str[n-1][0:-1]
+                movies = []
+                dictr = json.loads(movies_str[n-1])
+                movies_str.remove(movies_str[n-1])
+                for movie in movies_str:
+                    movie1 = bytes(movie, 'utf8')
+                    movies.append(json.loads(movie1))
+                return render_template("/movies/get_all.html", movies=movies, prev_url=dictr['is_prev_page'],
+                                       next_url=dictr['is_next_page'], next_page=page+1, prev_page=page-1)
             else:
                 flash("Фильм не найден", "error")
-                return redirect(url_for('movies.get'))
+                return redirect(url_for('movies.index'))
         else:
             flash(result.error, "error")
-            return redirect(url_for('movies.get'))
+            return redirect(url_for('movies.index'))
