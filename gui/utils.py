@@ -31,6 +31,14 @@ def request_handler(redirect_url):
     return wrap
 
 
+@request_handler(redirect_url='movies.get_all')
+def do_create_seance(movie_id, number_of_seats, date_time):
+    result = gateway_api_request(current_config.SEANCE_SERVICE_PATH, 'POST', {'movie_id': movie_id,
+                                                                              'datetime': date_time,
+                                                                              'number_of_seats': int(number_of_seats)})
+    return result
+
+
 @request_handler(redirect_url='movies.index')
 def do_create_movie(name, description, length):
     result = gateway_api_request(current_config.MOVIE_SERVICE_PATH, 'POST',

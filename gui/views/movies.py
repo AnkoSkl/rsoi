@@ -76,29 +76,28 @@ def get():
                 return redirect(url_for('movies.get'))
 
 
-@mod.route('/movies/delete', methods=['GET', 'POST'])
-def delete():
+@mod.route('/movies/delete/<movie_id>', methods=['GET', 'POST'])
+def delete(movie_id):
     if request.method == 'GET':
-        return render_template("/movies/delete.html")
+        return render_template("/movies/delete.html", movie_id=movie_id)
     else:
-        if 'movie_id' not in request.form or request.form['movie_id'] == '':
-            flash('Идентификатор не задан', "error")
-            return redirect(url_for('movies.delete'))
-        else:
-            movie_id = request.form["movie_id"]
+        if request.form['submit'] == 'Нет':
+            return redirect(url_for('movies.get_all'))
+        if request.form['submit'] == 'Да':
+            #movie_id = request.args["movie_id"]
             result = do_delete_movie(movie_id)
 
             if result.success:
                 if result.response.status_code == 204:
                     flash('Фильм успешно удален', "info")
-                    response = redirect(url_for('movies.delete'))
+                    response = redirect(url_for('movies.get_all'))
                     return response
                 else:
                     flash("Фильм не найден", "error")
-                    return redirect(url_for('movies.delete'))
+                    return redirect(url_for('movies.get_all'))
             else:
                 flash(result.error, "error")
-                return redirect(url_for('movies.delete'))
+                return redirect(url_for('movies.get_all'))
 
 
 @mod.route('/movies/get_all')
@@ -106,6 +105,11 @@ def get_all():
     if request.method == 'GET':
         if 'page' not in request.args:
             return redirect(url_for('movies.get_all', page=1))
+        if 'submit' in request.form:
+            if request.form['submit'] == 'Создать сеанс':
+                pass
+            if request.form['submit'] == 'Удалить фильм':
+                pass
         page = request.args.get('page', 1, type=int)
         result = do_get_paginated_movie(page, 10)
         if result.success:
