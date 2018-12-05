@@ -17,6 +17,7 @@
                     <td> {{ item["ticket_ids"] }}</td>
                 </tr>
                 </table>
+                <a href="{{ url_for('users.get', user_id=item["user_id"]) }}">Выбрать пользователя</a>
             {% endfor %}
             <p></p>
             {% if prev_url %}

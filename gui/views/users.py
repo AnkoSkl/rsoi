@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, session, redirect, url_for, \
      request, flash, g, jsonify, abort
-from gui.utils import do_get_paginated_user
+from gui.utils import do_get_paginated_user, do_get_user
 import json
 
 mod = Blueprint('users', __name__)
@@ -11,9 +11,21 @@ def index():
     return render_template("/users/index.html")
 
 
-@mod.route('/users/get')
-def get():
-    return render_template("/users/index.html")
+@mod.route('/users/get/<user_id>', methods=['GET', 'POST'])
+def get(user_id):
+    if request.method == 'GET':
+        result = do_get_user(user_id)
+        if result.success:
+            if result.response.status_code == 200:
+                user = json.loads(result.response.content)
+                ticket_ids = user['ticket_ids']
+                return render_template("/users/get.html", user = user, ticket_ids = ticket_ids)
+            else:
+                flash('Ошибка. Фильма или сеанса не существует.', "error")
+                return redirect(url_for('seances.get_all'), "error")
+        else:
+            flash(result.error, "error")
+            return redirect(url_for('seances.get_all'), "error")
 
 
 @mod.route('/users/get_all')
