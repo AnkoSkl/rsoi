@@ -2,7 +2,5 @@
 {% block body %}
 <title>{% block title %}Сеансы{% endblock %}</title>
     <p class=nav>
-    <a href="{{ url_for('seances.get_all') }}">Посмотреть подробную информацию о сеансе</a>
-    <p class=nav>
     <a href="{{ url_for('seances.get_all') }}">Посмотреть список всех сеансов</a>
 {% endblock %}
