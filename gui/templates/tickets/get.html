@@ -1,10 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends "layout.html" %}
+{% block title %}Информация о билете{% endblock %}
+{% block body %}
+    <form action="" method="post">
+        <p>
+            <input type=text placeholder="Идентификатор" name=ticket_id value="{{ request.form.ticket_id }}">
+        </p>
+        <p>
+            <input type="submit" value="Найти">
+        </p>
+        {% if ticket_found %}
+            <table>
+            <tr>
+                <th> Идентификатор билета </th>
+                <td> {{ ticket["ticket_id"] }}</td>
+            </tr>
+            <tr>
+                <th> Идентификатор сеанса </th>
+                <td> {{ ticket["seance_id"] }}</td>
+            </tr>
+            <tr>
+                <th> Номер места </th>
+                <td> {{ ticket["seat_number"] }}</td>
+            </tr>
+            </table>
+        {% endif %}
+    </form>
+{% endblock %}

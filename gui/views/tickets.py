@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, session, redirect, url_for, \
      request, flash, g, jsonify, abort
-from gui.utils import do_get_paginated_tickets
+from gui.utils import do_get_paginated_tickets, do_get_ticket
 import json
 
 mod = Blueprint('tickets', __name__)
@@ -11,9 +11,36 @@ def index():
     return render_template("/tickets/index.html")
 
 
-@mod.route('/tickets/get')
+@mod.route('/tickets/get', methods=['GET', 'POST'])
 def get():
-    return render_template("/tickets/get.html")
+    if request.method == 'GET':
+        return render_template("/tickets/get.html", ticket_found = False)
+    else:
+        if 'ticket_id' not in request.form or request.form['ticket_id'] == '':
+            flash('Идентификатор не задан', "error")
+            return redirect(url_for('tickets.get'))
+        else:
+            ticket_id = request.form["ticket_id"]
+            result = do_get_ticket(ticket_id)
+
+            if result.success:
+                if result.response.status_code == 200:
+                    ticket = json.loads(result.response.content)
+                    return render_template("/tickets/get.html", ticket=ticket, ticket_found=True)
+                else:
+                    flash("Билет не найден", "error")
+                    return redirect(url_for('tickets.get'))
+            else:
+                flash(result.error, "error")
+                return redirect(url_for('tickets.get'))
+
+
+@mod.route('/tickets/buy')
+def buy():
+    if request.method == 'GET':
+        seance_id = request.args['seance_id']
+        seat_number = request.args['seat_number']
+
 
 
 @mod.route('/tickets/get_all')
