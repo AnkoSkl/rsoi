@@ -36,7 +36,9 @@ class UserRepository:
             ticket_ids = jsonpickle.decode(user.ticket_ids)
             users.append(User(user_id=user.mongo_id, ticket_ids=ticket_ids, name=user.name,
                               password=user.password))
-        return users
+        is_prev_num = (users_paged.prev_num > 0)
+        is_next_num = (users_paged.next_num <= users_paged.pages)
+        return users, is_prev_num, is_next_num
 
     def delete(self, user_id):
         if self.exists(user_id):

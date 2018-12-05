@@ -3,6 +3,7 @@ from flask_restful import Resource, abort, reqparse
 from user.repository.user_repository import UserRepository
 import jsonpickle
 import flask
+import json
 
 
 def abort_if_user_doesnt_exist(user_id, repo):
@@ -94,10 +95,12 @@ class UserListResource(Resource):
         except:
             args = {'page': 1, 'page_size': 5}
         app.logger.info('Номер страницы: %d; количество пользователей на странице: %d' % (args['page'], args['page_size']))
-        users_list = repo.read_paginated(page_number=args['page'], page_size=args['page_size'])
+        users_list, is_prev_page, is_next_page = repo.read_paginated(page_number=args['page'], page_size=args['page_size'])
         users = ''
         for user in users_list:
             users += user.to_json() + '\n'
+        dictr = {"is_prev_page": is_prev_page, "is_next_page": is_next_page}
+        users += "\n" + json.dumps(dictr)
         response = app.make_response("")
         response.status_code = 200
         response.content_type = "application/json"

@@ -57,6 +57,13 @@ def do_return_ticket(ticket_id):
     return result
 
 
+@request_handler(redirect_url='seance.index')
+def do_get_paginated_user(page, page_size):
+    result = gateway_api_request(current_config.USER_SERVICE_PATH, 'GET',
+                                 params=(('page', page), ('page_size', page_size)))
+    return result
+
+
 @request_handler(redirect_url='movies.get_all')
 def do_create_seance(movie_id, number_of_seats, date_time):
     result = gateway_api_request(current_config.SEANCE_SERVICE_PATH + current_config.CREATE_PATH, 'POST', {'movie_id': movie_id,
