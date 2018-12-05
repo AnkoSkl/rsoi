@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, session, redirect, url_for, \
      request, flash, g, jsonify, abort
-from gui.utils import do_get_paginated_tickets, do_get_ticket, do_buy_ticket
+from gui.utils import do_get_paginated_tickets, do_get_ticket, do_buy_ticket, do_return_ticket
 import json
 
 mod = Blueprint('tickets', __name__)
@@ -50,7 +50,23 @@ def buy():
                 return redirect(url_for('seances.get_all'))
         else:
             flash(result.error, 'error')
-            return redirect(url_for('seances.get_all'), seance_id)
+            return redirect(url_for('seances.get_all'))
+
+
+@mod.route('/tickets/return/<ticket_id>')
+def return_ticket(ticket_id):
+    if request.method == 'GET':
+        result = do_return_ticket(ticket_id)
+        if result.success:
+            if result.response.status_code == 201:
+                flash('Возврат билета успешно произведен', 'info')
+                return redirect(url_for('seances.get_all'))
+            else:
+                flash('Возврат билета не может быть произведен', 'error')
+                return redirect(url_for('seances.get_all'))
+        else:
+            flash(result.error, 'error')
+            return redirect(url_for('seances.get_all'))
 
 
 @mod.route('/tickets/get_all')
