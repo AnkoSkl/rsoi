@@ -44,9 +44,16 @@ def do_get_ticket(ticket_id):
     return result
 
 
+@request_handler(redirect_url='tickets.index')
+def do_buy_ticket(seance_id, seat_number):
+    result = gateway_api_request(current_config.TICKET_SERVICE_PATH+'/buy', 'POST', {'seat_number':seat_number,
+                                                                                     'seance_id':seance_id})
+    return result
+
+
 @request_handler(redirect_url='movies.get_all')
 def do_create_seance(movie_id, number_of_seats, date_time):
-    result = gateway_api_request(current_config.SEANCE_SERVICE_PATH, 'POST', {'movie_id': movie_id,
+    result = gateway_api_request(current_config.SEANCE_SERVICE_PATH + current_config.CREATE_PATH, 'POST', {'movie_id': movie_id,
                                                                               'datetime': date_time,
                                                                               'number_of_seats': int(number_of_seats)})
     return result
@@ -67,7 +74,7 @@ def do_get_seance(seance_id):
 
 @request_handler(redirect_url='movies.index')
 def do_create_movie(name, description, length):
-    result = gateway_api_request(current_config.MOVIE_SERVICE_PATH, 'POST',
+    result = gateway_api_request(current_config.MOVIE_SERVICE_PATH + current_config.CREATE_PATH, 'POST',
                                  {'name': name, 'description': description, 'length': int(length)})
     return result
 
@@ -97,7 +104,7 @@ def gateway_api_request(service_path, method, data=None, params=None, cookies=No
                             + service_path, params=params, cookies=cookies)
     elif method == 'POST':
         return requests.post(current_config.GATEWAY_SERVICE_URL + current_config.GATEWAY_SERVICE_PATH
-                             + service_path + current_config.CREATE_PATH, data=jsonpickle.encode(data), params=params,
+                             + service_path, data=jsonpickle.encode(data), params=params,
                              cookies=cookies)
     elif method == 'PUT':
         return requests.put(current_config.GATEWAY_SERVICE_URL + current_config.GATEWAY_SERVICE_PATH

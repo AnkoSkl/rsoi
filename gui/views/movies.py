@@ -105,11 +105,6 @@ def get_all():
     if request.method == 'GET':
         if 'page' not in request.args:
             return redirect(url_for('movies.get_all', page=1))
-        if 'submit' in request.form:
-            if request.form['submit'] == 'Создать сеанс':
-                pass
-            if request.form['submit'] == 'Удалить фильм':
-                pass
         page = request.args.get('page', 1, type=int)
         result = do_get_paginated_movie(page, 10)
         if result.success:
