@@ -1,10 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends "layout.html" %}
+{% block title %}Информация о сеансе{% endblock %}
+{% block body %}
+    <form action="" method="post">
+    <h3>Фильм</h3>
+            <table>
+            <tr>
+                <th> Идентификатор </th>
+                <td> {{ movie["movie_id"] }}</td>
+            </tr>
+            <tr>
+                <th> Название </th>
+                <td> {{ movie["name"] }}</td>
+            </tr>
+            <tr>
+                <th> Описание </th>
+                <td> {{ movie["description"] }}</td>
+            </tr>
+            <tr>
+                <th> Длительность </th>
+                <td> {{ movie["length"] }}</td>
+            </tr>
+            </table>
+    <h3>Сеанс</h3>
+            <table>
+            <tr>
+                <th> Идентификатор </th>
+                <td> {{ seance["seance_id"] }}</td>
+            </tr>
+            <tr>
+                <th> Дата показа фильма </th>
+                <td> {{ datetime["date"] }}</td>
+            </tr>
+            <tr>
+                <th> Время начала показа фильма </th>
+                <td> {{ datetime["time"] }}</td>
+            </tr>
+            </table>
+            <h3>Места</h3>
+                {% for i in range(number_of_seats) %}
+                    {% if i>0 %}
+                        {% if seats[i-1] %}
+                        <input type="submit" value="{{ i }}">
+                        {% endif %}
+                        {% if not seats[i-1] %}
+                        <a>{{ i }}</a>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+    </form>
+{% endblock %}

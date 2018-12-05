@@ -39,6 +39,19 @@ def do_create_seance(movie_id, number_of_seats, date_time):
     return result
 
 
+@request_handler(redirect_url='seance.index')
+def do_get_paginated_seance(page, page_size):
+    result = gateway_api_request(current_config.SEANCE_SERVICE_PATH, 'GET',
+                                 params=(('page', page), ('page_size', page_size)))
+    return result
+
+
+@request_handler(redirect_url='seance.index')
+def do_get_seance(seance_id):
+    result = gateway_api_request(current_config.SEANCE_SERVICE_PATH+'/'+seance_id, 'GET')
+    return result
+
+
 @request_handler(redirect_url='movies.index')
 def do_create_movie(name, description, length):
     result = gateway_api_request(current_config.MOVIE_SERVICE_PATH, 'POST',
