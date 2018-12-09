@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block title %}Информация о сеансах{% endblock %}
+{% block body %}
+    <form action="" method="get">
+            {% for item in seances %}
+                <table>
+                <tr>
+                    <th> Идентификатор сеанса </th>
+                    <td> {{ item["seance_id"] }}</td>
+                </tr>
+                <tr>
+                    <th> Идентификатор фильма </th>
+                    <td> {{ item["movie_id"] }}</td>
+                </tr>
+                <tr>
+                    <th> Общее количество мест </th>
+                    <td> {{ item["number_of_seats"] }}</td>
+                </tr>
+                <tr>
+                    <th> Количество свободных мест </th>
+                    <td> {{ item["number_of_free_seats"] }}</td>
+                </tr>
+                <tr>
+                    <th> Дата показа фильма </th>
+                    <td> {{ item["date"] }}</td>
+                </tr>
+                <tr>
+                    <th> Время начала показа фильма </th>
+                    <td> {{ item["time"] }}</td>
+                </tr>
+                </table>
+                <a href="{{ url_for('seances.get', seance_id=item["seance_id"]) }}">Посмотреть сеанс</a>
+                <!--<a href="{{ url_for('seances.create', movie_id=item["movie_id"]) }}">Создать сеанс</a>-->
+            {% endfor %}
+            <p></p>
+            {% if prev_url %}
+                <a href="{{ url_for('seances.get_all', page=prev_page) }}">Предыдущие сеансы</a>
+            {% endif %}
+            {% if next_url %}
+                <a href="{{ url_for('seances.get_all', page=next_page) }}" >Следующие сеансы</a>
+            {% endif %}
+    </form>
+{% endblock %}

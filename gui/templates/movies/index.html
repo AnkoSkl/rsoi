@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block body %}
+<title>{% block title %}ФИЛЬМЫ{% endblock %}</title>
+    <p class=nav>
+    <a href="{{ url_for('movies.create') }}">Добавить новый фильм</a>
+    <p class=nav>
+    <a href="{{ url_for('movies.get') }}">Посмотреть подробную информацию о фильме</a>
+    <p class=nav>
+    <a href="{{ url_for('movies.get_all') }}">Посмотреть список всех фильмов</a>
+{% endblock %}

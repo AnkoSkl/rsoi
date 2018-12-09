@@ -32,7 +32,9 @@ class MovieRepository:
         for movie in movies_paginated.items:
             movies.append(Movie(movie_id=movie.mongo_id, name=movie.name, description=movie.description,
                                 length=movie.length))
-        return movies
+        is_prev_num = (movies_paginated.prev_num > 0)
+        is_next_num = (movies_paginated.next_num <= movies_paginated.pages)
+        return movies, is_prev_num, is_next_num
 
     def delete(self, movie_id):
         if self.exists(movie_id):

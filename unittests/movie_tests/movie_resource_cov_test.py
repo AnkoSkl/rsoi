@@ -50,7 +50,7 @@ class TestMovieListResource(unittest.TestCase):
         movies = []
         movie = Movie(name='movie', description='description', length=60, movie_id="123")
         movies.append(movie)
-        mock_movie.return_value.read_paginated.return_value = movies
+        mock_movie.return_value.read_paginated.return_value = movies, False, True
         mr = MovieListResource()
         res = mr.get()
         self.assertEqual(res.status_code, 200)

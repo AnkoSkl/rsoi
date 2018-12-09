@@ -3,6 +3,7 @@ from flask_restful import Resource, abort, reqparse
 from movie.repository.movie_repository import MovieRepository
 import jsonpickle
 import flask
+import json
 
 
 def abort_if_movie_doesnt_exist(movie_id, repo):
@@ -66,10 +67,13 @@ class MovieListResource(Resource):
         except:
             args = {'page': 1, 'page_size': 5}
         app.logger.info('Номер страницы: %d; количество фильмов на странице: %d' % (args['page'], args['page_size']))
-        movies_list = repo.read_paginated(page_number=args['page'], page_size=args['page_size'])
+        movies_list, is_prev_page, is_next_page = repo.read_paginated(page_number=args['page'],
+                                                                      page_size=args['page_size'])
         movies = ''
         for movie in movies_list:
             movies += "\n" + movie.to_json()
+        dictr = {"is_prev_page": is_prev_page, "is_next_page": is_next_page}
+        movies += "\n" + json.dumps(dictr)
         response = app.make_response("")
         response.status_code = 200
         response.content_type = "application/json"

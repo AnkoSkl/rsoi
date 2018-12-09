@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+{% block title %}Информация о сеансе{% endblock %}
+{% block body %}
+    <form action="" method="post">
+    <h3>Фильм</h3>
+            <table>
+            <tr>
+                <th> Идентификатор </th>
+                <td> {{ movie["movie_id"] }}</td>
+            </tr>
+            <tr>
+                <th> Название </th>
+                <td> {{ movie["name"] }}</td>
+            </tr>
+            <tr>
+                <th> Описание </th>
+                <td> {{ movie["description"] }}</td>
+            </tr>
+            <tr>
+                <th> Длительность </th>
+                <td> {{ movie["length"] }}</td>
+            </tr>
+            </table>
+    <h3>Сеанс</h3>
+            <table>
+            <tr>
+                <th> Идентификатор </th>
+                <td> {{ seance["seance_id"] }}</td>
+            </tr>
+            <tr>
+                <th> Дата показа фильма </th>
+                <td> {{ datetime["date"] }}</td>
+            </tr>
+            <tr>
+                <th> Время начала показа фильма </th>
+                <td> {{ datetime["time"] }}</td>
+            </tr>
+            </table>
+            <h3>Места</h3>
+                {% for i in range(number_of_seats) %}
+                    {% if i>0 %}
+                        {% if seats[i-1] %}
+                            <a style="text-decoration-color: #00FF00" href="{{ url_for('tickets.buy', seat_number=i, seance_id=seance["seance_id"]) }}">{{ i }}</a>
+                        {% endif %}
+                        {% if not seats[i-1] %}
+                        <a>{{ i }}</a>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+    </form>
+{% endblock %}

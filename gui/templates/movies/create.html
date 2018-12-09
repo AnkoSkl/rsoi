@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block title %}Добавить фильм{% endblock %}
+{% block body %}
+  <form action="" method=post>
+    <p>
+      <input type=text placeholder="Имя" name=name value="{{ request.form.name }}">
+    <p>
+      <input type=text placeholder="Описание" name=description value="{{ request.form.description }}">
+    <p>
+      <input type=text placeholder="Длительность, мин." name=length value="{{ request.form.length }}">
+
+      <p>
+      <input type=submit value=Ok>
+    <p>
+  </form>
+{% endblock %}

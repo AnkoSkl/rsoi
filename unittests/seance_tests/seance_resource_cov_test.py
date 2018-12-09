@@ -57,7 +57,9 @@ class TestSeanceListResource(unittest.TestCase):
     @patch('seance.rest_api.seance_resource.SeanceRepository')
     def test_get(self, mock_seance):
         seances = []
-        mock_seance.return_value.read_paginated_return_value = seances
+        seance = Seance(seance_id="123", movie_id="012", date_time="01.01.2018", seats=[True])
+        seances.append(seance)
+        mock_seance.return_value.read_paginated.return_value = seances, False, True
         sr = SeanceListResource()
         res = sr.get()
         self.assertEqual(res.status_code, 200)

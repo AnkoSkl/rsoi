@@ -48,7 +48,9 @@ class TestTicketListResource(unittest.TestCase):
     @patch('ticket.rest_api.ticket_resource.TicketRepository')
     def test_get(self, mock_ticket):
         tickets = []
-        mock_ticket.return_value.read_pagineted.return_value = tickets
+        ticket = Ticket(ticket_id="123", seance_id="012", seat_number=1)
+        tickets.append(ticket)
+        mock_ticket.return_value.read_paginated.return_value = tickets, False, True
         tr = TicketListResource()
         res = tr.get()
         self.assertEqual(res.status_code, 200)

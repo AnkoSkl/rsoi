@@ -37,7 +37,9 @@ class SeanceRepository:
             seats = jsonpickle.decode(seance.seats)
             seances.append(Seance(seance_id=seance.mongo_id, movie_id=seance.movie_id, date_time=seance.date_time,
                                   seats=seats))
-        return seances
+        is_prev_num = (seances_paginated.prev_num > 0)
+        is_next_num = (seances_paginated.next_num <= seances_paginated.pages)
+        return seances, is_prev_num, is_next_num
 
     def delete(self, seance_id):
         if self.exists(seance_id):

@@ -3,6 +3,7 @@ from flask_restful import Resource, abort, reqparse
 from seance.repository.seance_repository import SeanceRepository
 import jsonpickle
 import flask
+import json
 
 
 def abort_if_seance_doesnt_exist(seance_id, repo):
@@ -107,10 +108,13 @@ class SeanceListResource(Resource):
         except:
             args = {'page': 1, 'page_size': 5}
         app.logger.info('Номер страницы: %d; количество сеансов на странице: %d' % (args['page'], args['page_size']))
-        seances_list = repo.read_paginated(page_number=args['page'], page_size=args['page_size'])
+        seances_list, is_prev_page, is_next_page = repo.read_paginated(page_number=args['page'],
+                                                                       page_size=args['page_size'])
         seances = ''
         for seance in seances_list:
             seances += seance.to_json() + '\n'
+        dictr = {"is_prev_page": is_prev_page, "is_next_page": is_next_page}
+        seances += "\n" + json.dumps(dictr)
         response = app.make_response("")
         response.status_code = 200
         response.content_type = "application/json"

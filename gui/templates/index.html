@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block body %}
+    <p class=nav>
+    <a href="{{ url_for('movies.index') }}">Фильмы</a>
+    <p class=nav>
+    <a href="{{ url_for('seances.index') }}">Сеансы</a>
+    <p class=nav>
+    <a href="{{ url_for('tickets.index') }}">Билеты</a>
+    <p class=nav>
+    <a href="{{ url_for('users.index') }}">Пользователи</a>
+{% endblock %}

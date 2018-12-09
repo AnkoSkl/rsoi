@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block title %}Информация о фильмах{% endblock %}
+{% block body %}
+    <form action="" method="get">
+            {% for item in movies %}
+                <table>
+                <tr>
+                    <th> Идентификатор </th>
+                    <td> {{ item["movie_id"] }}</td>
+                </tr>
+                <tr>
+                    <th> Название </th>
+                    <td> {{ item["name"] }}</td>
+                </tr>
+                <tr>
+                    <th> Описание </th>
+                    <td> {{ item["description"] }}</td>
+                </tr>
+                <tr>
+                    <th> Длительность </th>
+                    <td> {{ item["length"] }}</td>
+                </tr>
+                </table>
+                <a href="{{ url_for('seances.create', movie_id=item["movie_id"]) }}">Создать сеанс</a>
+                <a href="{{ url_for('movies.delete', movie_id=item["movie_id"] )}}">Удалить фильм</a>
+            {% endfor %}
+            <p></p>
+            {% if prev_url %}
+                <a href="{{ url_for('movies.get_all', page=prev_page) }}">Предыдущие фильмы</a>
+            {% endif %}
+            {% if next_url %}
+                <a href="{{ url_for('movies.get_all', page=next_page) }}" >Следующие фильмы</a>
+            {% endif %}
+    </form>
+{% endblock %}

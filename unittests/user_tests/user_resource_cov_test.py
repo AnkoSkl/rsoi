@@ -57,7 +57,9 @@ class TestSeanceListResource(unittest.TestCase):
     @patch('user.rest_api.user_resource.UserRepository')
     def test_get(self, mock_user):
         users = []
-        mock_user.return_value.read_paginated.return_value = users
+        user = User(user_id="123", ticket_ids="012", name="name", password="pass")
+        users.append(user)
+        mock_user.return_value.read_paginated.return_value = users, False, True
         ur = UserListResource()
         res = ur.get()
         self.assertEqual(res.status_code, 200)
