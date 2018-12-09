@@ -19,7 +19,7 @@ class DevelopmentConfig(Config):
     USER_SERVICE_URL = "http://127.0.0.1:%d" % PORT
     GATEWAY_SERVICE_URL = "http://127.0.0.1:5000"
 
-    MONGOALCHEMY_DATABASE_URI = "postgresql+psycopg2://tester:111@localhost/users_db"
+    MONGOALCHEMY_DATABASE_URI = "mongodbl+psycopg2://tester:111@localhost/users_db"
     TOKEN_EXPIRATION_TIME = 2000
 
 current_config = DevelopmentConfig()
