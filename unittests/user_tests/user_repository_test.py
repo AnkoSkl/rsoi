@@ -7,17 +7,17 @@ from flask_mongoalchemy import fields
 class TestUserRepository(unittest.TestCase):
     def test_create(self):
         rep = UserRepository()
-        id1 = rep.create('name', 'password')
-        id2 = rep.create('name', 'password')
+        id1 = rep.create('name', 'password', 'true')
+        id2 = rep.create('name', 'password', 'true')
         self.assertNotEqual(id1, id2)
         rep.delete(id1)
         rep.delete(id2)
 
     def test_get_right(self):
         rep = UserRepository()
-        user_id = rep.create('name', 'password')
+        user_id = rep.create('name', 'password', 'true')
         user1 = rep.get(user_id)
-        user2 = User(user_id=fields.ObjectId(user_id), ticket_ids=[], name='name', password='password')
+        user2 = User(user_id=fields.ObjectId(user_id), ticket_ids=[], name='name', admin='true')
         self.assertEqual(user1, user2)
         rep.delete(user_id)
 
@@ -33,13 +33,13 @@ class TestUserRepository(unittest.TestCase):
 
     def test_delete_existed(self):
         rep = UserRepository()
-        id1 = rep.create('name', 'password')
+        id1 = rep.create('name', 'password', 'true')
         rep.delete(id1)
         self.assertFalse(rep.exists(id1))
 
     def test_assign_ticket_true(self):
         rep = UserRepository()
-        user_id = rep.create('name', 'password')
+        user_id = rep.create('name', 'password', 'true')
         boolean = rep.assign_ticket(user_id, 'abc')
         self.assertTrue(boolean)
         rep.delete(user_id)
@@ -51,7 +51,7 @@ class TestUserRepository(unittest.TestCase):
 
     def test_remove_ticket_true(self):
         rep = UserRepository()
-        user_id = rep.create('name', 'password')
+        user_id = rep.create('name', 'password', 'false')
         rep.assign_ticket(user_id, 'abc')
         boolean = rep.remove_ticket(user_id, 'abc')
         self.assertTrue(boolean)
@@ -64,7 +64,7 @@ class TestUserRepository(unittest.TestCase):
 
     def test_exists_true(self):
         rep = UserRepository()
-        user_id = rep.create('name', 'password')
+        user_id = rep.create('name', 'password', 'false')
         boolean = rep.exists(user_id)
         self.assertTrue(boolean)
         rep.delete(user_id)

@@ -71,8 +71,8 @@ class UserCreateResource(Resource):
         try:
             payload = jsonpickle.decode(flask.request.data)
         except:
-            payload = {'name': 'test', 'password': 'test'}
-        user_id = repo.create(payload["name"], payload["password"])
+            payload = {'name': 'test', 'password': 'test', 'admin': 'false'}
+        user_id = repo.create(payload["name"], payload["password"], payload["admin"])
         user = repo.get(user_id)
         response = app.make_response("")
         response.status_code = 201

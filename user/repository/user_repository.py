@@ -11,12 +11,13 @@ class Users(db.Document):
     ticket_ids = db.StringField()
     name = db.StringField()
     password = db.StringField()
+    admin = db.StringField()
 
 
 class UserRepository:
-    def create(self, name, password):
+    def create(self, name, password, admin):
         ticket_ids = []
-        user = Users(ticket_ids=jsonpickle.encode(ticket_ids), name=name, password=str(password))
+        user = Users(ticket_ids=jsonpickle.encode(ticket_ids), name=name, password=str(password), admin = admin)
         user.save()
         return user.mongo_id
 
@@ -24,7 +25,7 @@ class UserRepository:
         if self.exists(user_id):
             user = Users.query.get(user_id)
             ticket_ids = jsonpickle.decode(user.ticket_ids)
-            return User(user_id=user.mongo_id, ticket_ids=ticket_ids, name=user.name, password=user.password)
+            return User(user_id=user.mongo_id, ticket_ids=ticket_ids, name=user.name, admin=user.admin)
         else:
             return None
 
@@ -35,7 +36,7 @@ class UserRepository:
         for user in users_paged.items:
             ticket_ids = jsonpickle.decode(user.ticket_ids)
             users.append(User(user_id=user.mongo_id, ticket_ids=ticket_ids, name=user.name,
-                              password=user.password))
+                              admin=user.admin))
         is_prev_num = (users_paged.prev_num > 0)
         is_next_num = (users_paged.next_num <= users_paged.pages)
         return users, is_prev_num, is_next_num

@@ -7,7 +7,7 @@ from user.domain.user import User
 
 class TestUserCreateResource(unittest.TestCase):
     def test_post(self):
-        payload = {'name': 'test', 'password': 'test'}
+        payload = {'name': 'test', 'password': 'test', 'admin': 'true'}
         res = requests.post(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
                             current_config.CREATE_PATH, data=jsonpickle.encode(payload))
         self.assertEqual(res.status_code, 201)
@@ -27,7 +27,7 @@ class TestUserResource(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
 
     def test_delete_right(self):
-        payload = {'name': 'test', 'password': 'test'}
+        payload = {'name': 'test', 'password': 'test', 'admin': 'true'}
         res = requests.post(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
                             current_config.CREATE_PATH, data=jsonpickle.encode(payload))
         user = User.from_json(res.content)

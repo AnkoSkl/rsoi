@@ -16,7 +16,7 @@ class TestUserCreateResource(unittest.TestCase):
 class TestUserResource(unittest.TestCase):
     @patch('user.rest_api.user_resource.UserRepository')
     def test_get_right(self, mock_user):
-        user = User(user_id="123", ticket_ids="012", name="name", password="pass")
+        user = User(user_id="123", ticket_ids="012", name="name", admin="false")
         mock_user.return_value.get.return_value = user
         ur = UserResource()
         res = ur.get("123")
@@ -46,7 +46,7 @@ class TestUserResource(unittest.TestCase):
     @patch('user.rest_api.user_resource.UserRepository')
     def test_patch_right(self, mock_user):
         mock_user.return_value.assign_ticket.return_value = True
-        user = User(user_id="123", ticket_ids="012", name="name", password="pass")
+        user = User(user_id="123", ticket_ids="012", name="name", admin="true")
         mock_user.return_value.get.return_value = user
         ur = UserResource()
         res = ur.patch("123")
@@ -57,7 +57,7 @@ class TestSeanceListResource(unittest.TestCase):
     @patch('user.rest_api.user_resource.UserRepository')
     def test_get(self, mock_user):
         users = []
-        user = User(user_id="123", ticket_ids="012", name="name", password="pass")
+        user = User(user_id="123", ticket_ids="012", name="name", admin="false")
         users.append(user)
         mock_user.return_value.read_paginated.return_value = users, False, True
         ur = UserListResource()
