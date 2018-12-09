@@ -1,5 +1,6 @@
 from flask_mongoalchemy import MongoAlchemy
 from user import app
+from user.token import Token
 from user.domain.user import User
 import jsonpickle
 
@@ -12,12 +13,15 @@ class Users(db.Document):
     name = db.StringField()
     password = db.StringField()
     admin = db.StringField()
+    token = db.StringField()
 
 
 class UserRepository:
     def create(self, name, password, admin):
         ticket_ids = []
-        user = Users(ticket_ids=jsonpickle.encode(ticket_ids), name=name, password=str(password), admin = admin)
+        token = Token.generate(name).serialize()
+        user = Users(ticket_ids=jsonpickle.encode(ticket_ids), name=name, password=str(password), admin = admin,
+                     token=token)
         user.save()
         return user.mongo_id
 
@@ -28,6 +32,39 @@ class UserRepository:
             return User(user_id=user.mongo_id, ticket_ids=ticket_ids, name=user.name, admin=user.admin)
         else:
             return None
+
+    def get_by_token(self, token):
+        if not Token.is_expired(token):
+            user_id = Token.get_value(token)
+            user = self.get(user_id)
+            return user
+        return None
+
+    def get_token(self, user_id, password):
+        if self.exists(user_id):
+            user = self.get(user_id)
+            if self.check_password(user_id, password):
+                t = Token.generate(user_id).serialize()
+                user.token = t
+                user.save()
+                return t
+        return None
+
+    def check_password(self, user_id, password):
+        if self.exists(user_id):
+            user = self.get(user_id)
+            return password == user.password
+        return False
+
+    def refresh_token(self, token):
+        user_id = Token.get_value(token)
+        if self.exists(user_id):
+            t = Token.refresh(token)
+            user = self.get(user_id)
+            user.token = t
+            user.save()
+            return t
+        return None
 
     def read_paginated(self, page_number, page_size):
         users = []
