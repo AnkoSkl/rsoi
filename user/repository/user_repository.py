@@ -20,10 +20,13 @@ class UserRepository:
     def create(self, name, password, admin):
         ticket_ids = []
         token = Token.generate(name).serialize()
-        user = Users(ticket_ids=jsonpickle.encode(ticket_ids), name=name, password=str(password), admin = admin,
-                     token=token)
+        user = Users(ticket_ids=jsonpickle.encode(ticket_ids), name=name, password=self.hash_password(str(password)),
+                     admin = admin, token=token)
         user.save()
         return user.mongo_id
+
+    def hash_password(self, password):
+        return hash(password)
 
     def get(self, user_id):
         if self.exists(user_id):
@@ -53,7 +56,7 @@ class UserRepository:
     def check_password(self, user_id, password):
         if self.exists(user_id):
             user = self.get(user_id)
-            return password == user.password
+            return hash(str(password)) == user.password
         return False
 
     def refresh_token(self, token):
