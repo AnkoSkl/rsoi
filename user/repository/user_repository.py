@@ -3,6 +3,7 @@ from user import app
 from user.token import Token
 from user.domain.user import User
 import jsonpickle
+import hashlib
 
 
 db = MongoAlchemy(app)
@@ -26,7 +27,7 @@ class UserRepository:
         return user.mongo_id
 
     def hash_password(self, password):
-        return hash(password)
+        return hashlib.sha256(str(password))
 
     def get(self, user_id):
         if self.exists(user_id):
@@ -56,7 +57,7 @@ class UserRepository:
     def check_password(self, user_id, password):
         if self.exists(user_id):
             user = self.get(user_id)
-            return hash(str(password)) == user.password
+            return hash(password) == user.password
         return False
 
     def refresh_token(self, token):
