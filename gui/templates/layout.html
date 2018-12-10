@@ -17,6 +17,10 @@
     <h1><span>{{ self.title() }}</span></h1>
   {% endblock %}
 
+    <p class=nav>
+        <a href="{{ url_for('menu.index') }}">Главное меню</a>
+    </p>
+
   {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         <ul>
