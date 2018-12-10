@@ -20,7 +20,7 @@ class UserRepository:
     def create(self, name, password, admin):
         ticket_ids = []
         token = Token.generate(name).serialize()
-        user = Users(ticket_ids=jsonpickle.encode(ticket_ids), name=name, password=self.hash_password(str(password)),
+        user = Users(ticket_ids=jsonpickle.encode(ticket_ids), name=name, password=self.hash_password(password),
                      admin = admin, token=token)
         user.save()
         return user.mongo_id

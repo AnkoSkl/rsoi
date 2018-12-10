@@ -14,6 +14,9 @@ import json
 class GatewayTicketResource(Resource):
     def get(self, ticket_id):
         app.logger.info('Получен запрос на получение информации о билете с идентификатором %s' % ticket_id)
+        req = requests.session()
+        for cookie in flask.request.cookies:
+            req.cookies[cookie] = flask.request.cookies[cookie]
         response = requests.get(current_config.TICKET_SERVICE_URL + current_config.TICKET_SERVICE_PATH +
                                 "/%s" % ticket_id)
         result = flask.Response(status=response.status_code, headers=response.headers.items(),
@@ -34,6 +37,9 @@ class GatewayTicketListResource(Resource):
         app.logger.info('Получен запрос на получение списка билетов')
         try:
             args = self.parser.parse_args(strict=True)
+            req = requests.session()
+            for cookie in flask.request.cookies:
+                req.cookies[cookie] = flask.request.cookies[cookie]
         except:
             args = {'page': 1, 'page_size': 5}
         app.logger.info('Номер страницы: %d; количество билетов на странице: %d' % (args['page'], args['page_size']))
@@ -53,6 +59,9 @@ class GatewayTicketListResource(Resource):
 class GatewaySeanceResource(Resource):
     def get(self, seance_id):
         app.logger.info('Получен запрос на получение подробной информации о сеансе с идентификатором %s' % seance_id)
+        req = requests.session()
+        for cookie in flask.request.cookies:
+            req.cookies[cookie] = flask.request.cookies[cookie]
         response_seance = requests.get(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
                                        "/%s" % seance_id)
         if response_seance.status_code == 200:
@@ -92,6 +101,9 @@ class GatewaySeanceCreateResource(Resource):
         try:
             response = requests.post(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
                                      current_config.CREATE_PATH, data=flask.request.data)
+            req = requests.session()
+            for cookie in flask.request.cookies:
+                req.cookies[cookie] = flask.request.cookies[cookie]
         except:
             payload = {'movie_id': '5bd89b59af13c757e1b7f3fd', 'datetime': '12.11.2018_20:00', 'number_of_seats': 50}
             response = requests.post(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
@@ -113,6 +125,9 @@ class GatewaySeanceListResource(Resource):
     def get(self):
         app.logger.info('Получен запрос на получение списка сеансов')
         try:
+            req = requests.session()
+            for cookie in flask.request.cookies:
+                req.cookies[cookie] = flask.request.cookies[cookie]
             args = self.parser.parse_args(strict=True)
         except:
             args = {'page': 1, 'page_size': 5}
@@ -132,6 +147,9 @@ class GatewaySeanceListResource(Resource):
 
 class GatewayMovieResource(Resource):
     def get(self, movie_id):
+        req = requests.session()
+        for cookie in flask.request.cookies:
+            req.cookies[cookie] = flask.request.cookies[cookie]
         app.logger.info('Получен запрос на получение информации о фильме с идентификатором %s' % movie_id)
         response = requests.get(current_config.MOVIE_SERVICE_URL + current_config.MOVIE_SERVICE_PATH +
                                 "/%s" % movie_id)
@@ -144,6 +162,9 @@ class GatewayMovieResource(Resource):
         return result
 
     def delete(self, movie_id):
+        req = requests.session()
+        for cookie in flask.request.cookies:
+            req.cookies[cookie] = flask.request.cookies[cookie]
         app.logger.info('Получен запрос на удаление фильма с идентификатором %s' % movie_id)
         response = requests.delete(current_config.MOVIE_SERVICE_URL + current_config.MOVIE_SERVICE_PATH +
                                    "/%s" % movie_id)
@@ -160,6 +181,9 @@ class GatewayMovieCreateResource(Resource):
     def post(self):
         app.logger.info('Получен запрос на создание фильма')
         try:
+            req = requests.session()
+            for cookie in flask.request.cookies:
+                req.cookies[cookie] = flask.request.cookies[cookie]
             response = requests.post(current_config.MOVIE_SERVICE_URL + current_config.MOVIE_SERVICE_PATH +
                                      current_config.CREATE_PATH, data=flask.request.data)
         except:
@@ -184,6 +208,9 @@ class GatewayMovieListResource(Resource):
         app.logger.info('Получен запрос на получение списка фильмов')
         try:
             args = self.parser.parse_args(strict=True)
+            req = requests.session()
+            for cookie in flask.request.cookies:
+                req.cookies[cookie] = flask.request.cookies[cookie]
         except:
             args = {'page': 1, 'page_size': 5}
         page = args['page']
@@ -203,6 +230,9 @@ class GatewayMovieListResource(Resource):
 class GatewayUserResource(Resource):
     def get(self, user_id):
         app.logger.info('Получен запрос на получение информации о пользователе с идентификатором %s' % user_id)
+        req = requests.session()
+        for cookie in flask.request.cookies:
+            req.cookies[cookie] = flask.request.cookies[cookie]
         response = requests.get(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
                                 "/%s" % user_id)
         result = flask.Response(status=response.status_code, headers=response.headers.items(),
@@ -224,6 +254,9 @@ class GatewayUserListResource(Resource):
         app.logger.info('Получен запрос на получение списка пользователей')
         try:
             args = self.parser.parse_args(strict=True)
+            req = requests.session()
+            for cookie in flask.request.cookies:
+                req.cookies[cookie] = flask.request.cookies[cookie]
         except:
             args = {'page': 1, 'page_size': 5}
         app.logger.info('Номер страницы: %d; количество пользователей на странице: %d'
@@ -246,6 +279,9 @@ class GatewayBuyTicket(Resource):
 
     def post(self):
         app.logger.info('Получен запрос на покупку билета')
+        req = requests.session()
+        for cookie in flask.request.cookies:
+            req.cookies[cookie] = flask.request.cookies[cookie]
         payload = jsonpickle.decode(flask.request.data)
         payload1 = {'seat_number': payload["seat_number"], 'status': 'buy'}
         response = requests.patch(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
@@ -299,6 +335,9 @@ class GatewayReturnTicket(Resource):
 
     def delete(self, ticket_id):
         app.logger.info('Получен запрос на возврат билета')
+        req = requests.session()
+        for cookie in flask.request.cookies:
+            req.cookies[cookie] = flask.request.cookies[cookie]
         response = requests.get(current_config.TICKET_SERVICE_URL + current_config.TICKET_SERVICE_PATH +
                                 "/%s" % ticket_id)
         if response.status_code == 200:
