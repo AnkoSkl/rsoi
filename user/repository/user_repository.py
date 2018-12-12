@@ -44,16 +44,6 @@ class UserRepository:
             return user
         return None
 
-    def get_token(self, user_id, password):
-        if self.exists(user_id):
-            user = self.get(user_id)
-            if self.check_password(user_id, password):
-                t = Token.generate(user_id).serialize()
-                user.token = t
-                user.save()
-                return t
-        return None
-
     def check_password(self, user_id, password):
         if self.exists(user_id):
             user = self.get(user_id)
@@ -106,6 +96,28 @@ class UserRepository:
             user.save()
             return True
         return False
+
+    def get_token(self, login, password):
+        if self.login_exists(login):
+            if self.check_password_for_user(login, password):
+                user = self.get_user_by_login(login)
+                t = Token.generate(login).serialize()
+                user.token = t
+                user.save()
+                return t
+        return None
+
+    def check_password_for_user(self, login, password):
+        if self.login_exists(login):
+            user = self.get_user_by_login(login)
+            return self.check_password(user.mongo_id, password)
+
+    def login_exists(self, login):
+        result = Users.query.filter(Users.name == login)
+        return result is not None
+
+    def get_user_by_login(self, login):
+        return Users.query.filter(Users.name == login)
 
     def exists(self, user_id):
         result = Users.query.get(user_id)

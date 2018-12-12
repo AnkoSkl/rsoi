@@ -82,6 +82,24 @@ class UserCreateResource(Resource):
         return response
 
 
+class UserAuthorizationResource(Resource):
+    def get(self):
+        repo = UserRepository()
+        app.logger.info('Получен запрос на аутентификацию')
+        payload = jsonpickle.decode(flask.request.data)
+        token = repo.get_token(payload['name'], payload['password'])
+        if token is not None:
+            user = repo.get_by_token(token)
+            if user is not None:
+                response = app.make_response("Token was generated")
+                response.status_code = 200
+                response.set_cookie("token", value=token)
+                return response
+        response = app.make_response("Неверный логин или пароль")
+        response.status_code = 403
+        return response
+
+
 class UserListResource(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument("page", type=int, default=1)
