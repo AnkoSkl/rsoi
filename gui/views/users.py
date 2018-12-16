@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, session, redirect, url_for, \
      request, flash, g, jsonify, abort
-from gui.utils import do_get_paginated_user, do_get_user
+from gui.utils import do_get_paginated_user, do_get_user, do_authorization
 import json
 
 mod = Blueprint('users', __name__)
@@ -9,6 +9,39 @@ mod = Blueprint('users', __name__)
 @mod.route('/users/')
 def index():
     return render_template("/users/index.html")
+
+
+@mod.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template("/users/login.html")
+    else:
+        fail = False
+        if 'name' not in request.form or request.form['name'] == '':
+            flash('Логин не задан', "error")
+            fail = True
+        if 'password' not in request.form or request.form['password'] == '':
+            flash('Пароль не задан', "error")
+            fail = True
+        if fail:
+            return redirect(url_for('users.login'))
+        name = request.form['name']
+        password = request.form['password']
+        result = do_authorization(name, password)
+        if result.success:
+            if result.response.status_code == 200:
+                response = redirect(url_for('menu.index'))
+                response.headers["Set-Cookie"] = result.response.headers["Set-Cookie"]
+                g.user = result.response.cookies
+                #g.logged_in = True
+                return response
+
+            else:
+                flash(result.response.content.decode('utf-8'))
+                return redirect(url_for('users.login'))
+        else:
+            flash(result.error)
+        return redirect(url_for('users.login'))
 
 
 @mod.route('/users/get/<user_id>', methods=['GET', 'POST'])

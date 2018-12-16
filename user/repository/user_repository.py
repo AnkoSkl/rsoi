@@ -22,12 +22,14 @@ class UserRepository:
         ticket_ids = []
         token = Token.generate(name).serialize()
         user = Users(ticket_ids=jsonpickle.encode(ticket_ids), name=name, password=self.hash_password(password),
-                     admin = admin, token=token)
+                     admin=str(admin), token=str(token))
         user.save()
         return user.mongo_id
 
     def hash_password(self, password):
-        return hashlib.sha256(str(password))
+        tmp1 = str(password).encode('utf8')
+        tmp = hashlib.sha256(tmp1).hexdigest()
+        return tmp
 
     def get(self, user_id):
         if self.exists(user_id):
@@ -39,16 +41,15 @@ class UserRepository:
 
     def get_by_token(self, token):
         if not Token.is_expired(token):
-            user_id = Token.get_value(token)
-            user = self.get(user_id)
+            login = Token.get_value(token)
+            user = self.get_user_by_login(login)
             return user
         return None
 
-    def check_password(self, user_id, password):
-        if self.exists(user_id):
-            user = self.get(user_id)
-            return hash(password) == user.password
-        return False
+    def check_password(self, hash_password, password):
+        p1 = self.hash_password(password)
+        p2 = hash_password
+        return p1 == p2
 
     def refresh_token(self, token):
         user_id = Token.get_value(token)
@@ -102,7 +103,7 @@ class UserRepository:
             if self.check_password_for_user(login, password):
                 user = self.get_user_by_login(login)
                 t = Token.generate(login).serialize()
-                user.token = t
+                user.token = str(t)
                 user.save()
                 return t
         return None
@@ -110,14 +111,14 @@ class UserRepository:
     def check_password_for_user(self, login, password):
         if self.login_exists(login):
             user = self.get_user_by_login(login)
-            return self.check_password(user.mongo_id, password)
+            return self.check_password(user.password, password)
 
     def login_exists(self, login):
         result = Users.query.filter(Users.name == login)
         return result is not None
 
     def get_user_by_login(self, login):
-        return Users.query.filter(Users.name == login)
+        return Users.query.filter(Users.name == login).first()
 
     def exists(self, user_id):
         result = Users.query.get(user_id)

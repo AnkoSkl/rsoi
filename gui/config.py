@@ -19,6 +19,8 @@ class Config(object):
 
     SECRET_KEY = "qwerty1234"
 
+    GET_TOKEN_URL_PATH = "/auth/token"
+
 
 class DevelopmentConfig(Config):
     DEBUG = True

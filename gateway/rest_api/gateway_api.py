@@ -274,6 +274,31 @@ class GatewayUserListResource(Resource):
         return result
 
 
+class GatewayAuthorization(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument("name", type=str)
+    parser.add_argument("password", type=str)
+
+    def get(self):
+        app.logger.info('Получен запрос на аутентификацию')
+        req = requests.session()
+        for cookie in flask.request.cookies:
+            req.cookies[cookie] = flask.request.cookies[cookie]
+        args = self.parser.parse_args(strict=True)
+        login = args['name']
+        password = args['password']
+        payload = {'name': login, 'password': password}
+        response = req.get(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
+                           current_config.GET_TOKEN_URL_PATH, params=payload)
+        result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                response=response.content)
+        if response.status_code == 200:
+            app.logger.info('Запрос на авторизацию успешно обработан')
+        else:
+            app.logger.warning('Авторизация не может быть произведена')
+        return result
+
+
 class GatewayBuyTicket(Resource):
     user_id = "5bd0a351af13c713737dae92"
 

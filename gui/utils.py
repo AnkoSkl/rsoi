@@ -64,6 +64,13 @@ def do_get_paginated_user(page, page_size):
     return result
 
 
+@request_handler(redirect_url='user.login')
+def do_authorization(login, password):
+    result = gateway_api_request(current_config.USER_SERVICE_PATH+current_config.GET_TOKEN_URL_PATH, 'GET',
+                                 params=(('name', login), ('password', password)))
+    return result
+
+
 @request_handler(redirect_url='seance.index')
 def do_get_user(user_id):
     result = gateway_api_request(current_config.USER_SERVICE_PATH+'/'+user_id, 'GET')
@@ -72,9 +79,10 @@ def do_get_user(user_id):
 
 @request_handler(redirect_url='movies.get_all')
 def do_create_seance(movie_id, number_of_seats, date_time):
-    result = gateway_api_request(current_config.SEANCE_SERVICE_PATH + current_config.CREATE_PATH, 'POST', {'movie_id': movie_id,
-                                                                              'datetime': date_time,
-                                                                              'number_of_seats': int(number_of_seats)})
+    result = gateway_api_request(current_config.SEANCE_SERVICE_PATH + current_config.CREATE_PATH, 'POST',
+                                 {'movie_id': movie_id,
+                                  'datetime': date_time,
+                                  'number_of_seats': int(number_of_seats)})
     return result
 
 

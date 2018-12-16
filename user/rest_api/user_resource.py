@@ -83,11 +83,16 @@ class UserCreateResource(Resource):
 
 
 class UserAuthorizationResource(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument("name", type=str)
+    parser.add_argument("password", type=str)
+
     def get(self):
         repo = UserRepository()
         app.logger.info('Получен запрос на аутентификацию')
-        payload = jsonpickle.decode(flask.request.data)
-        token = repo.get_token(payload['name'], payload['password'])
+        args = self.parser.parse_args(strict=True)
+        #payload = jsonpickle.decode(flask.request.data)
+        token = repo.get_token(args['name'], args['password'])
         if token is not None:
             user = repo.get_by_token(token)
             if user is not None:
