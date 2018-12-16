@@ -8,11 +8,15 @@ mod = Blueprint('tickets', __name__)
 
 @mod.route('/tickets/')
 def index():
+    if not g.logged_in:
+        return redirect(url_for('users.login'))
     return render_template("/tickets/index.html")
 
 
 @mod.route('/tickets/get', methods=['GET', 'POST'])
 def get():
+    if not g.logged_in:
+        return redirect(url_for('users.login'))
     if request.method == 'GET':
         return render_template("/tickets/get.html", ticket_found = False)
     else:
@@ -37,6 +41,8 @@ def get():
 
 @mod.route('/tickets/buy')
 def buy():
+    if not g.logged_in:
+        return redirect(url_for('users.login'))
     if request.method == 'GET':
         seance_id = request.args['seance_id']
         seat_number = request.args['seat_number']
@@ -55,6 +61,8 @@ def buy():
 
 @mod.route('/tickets/return/<ticket_id>')
 def return_ticket(ticket_id):
+    if not g.logged_in:
+        return redirect(url_for('users.login'))
     if request.method == 'GET':
         result = do_return_ticket(ticket_id)
         if result.success:
@@ -71,6 +79,8 @@ def return_ticket(ticket_id):
 
 @mod.route('/tickets/get_all')
 def get_all():
+    if not g.logged_in:
+        return redirect(url_for('users.login'))
     if request.method == 'GET':
         if 'page' not in request.args:
             return redirect(url_for('tickets.get_all', page=1))

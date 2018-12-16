@@ -8,11 +8,15 @@ mod = Blueprint('seances', __name__)
 
 @mod.route('/seances/')
 def index():
+    if not g.logged_in:
+        return redirect(url_for('users.login'))
     return render_template("/seances/index.html")
 
 
 @mod.route('/seances/get/<seance_id>', methods=['GET', 'POST'])
 def get(seance_id):
+    if not g.logged_in:
+        return redirect(url_for('users.login'))
     if request.method == 'GET':
         result = do_get_seance(seance_id)
         if result.success:
@@ -42,6 +46,8 @@ def get(seance_id):
 
 @mod.route('/seances/create', methods=['GET', 'POST'])
 def create():
+    if not g.logged_in:
+        return redirect(url_for('users.login'))
     if request.method == 'GET':
         if 'movie_id' in request.args:
             movie_id = request.args['movie_id']
@@ -88,6 +94,8 @@ def create():
 
 @mod.route('/seances/get_all')
 def get_all():
+    if not g.logged_in:
+        return redirect(url_for('users.login'))
     if request.method == 'GET':
         if 'page' not in request.args:
             return redirect(url_for('seances.get_all', page=1))

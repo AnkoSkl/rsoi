@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, session, redirect, url_for, \
      request, flash, g, jsonify, abort
-from gui.utils import do_get_paginated_user, do_get_user, do_authorization
+from gui.utils import do_get_paginated_user, do_get_user, do_authorization, do_logout
 import json
 
 mod = Blueprint('users', __name__)
@@ -8,6 +8,8 @@ mod = Blueprint('users', __name__)
 
 @mod.route('/users/')
 def index():
+    if not g.logged_in:
+        return redirect(url_for('users.login'))
     return render_template("/users/index.html")
 
 
@@ -44,8 +46,18 @@ def login():
         return redirect(url_for('users.login'))
 
 
+@mod.route('/users/logout')
+def logout():
+    result = do_logout()
+    response = redirect(url_for(result.redirect))
+    response.delete_cookie('token')
+    return response
+
+
 @mod.route('/users/get/<user_id>', methods=['GET', 'POST'])
 def get(user_id):
+    if not g.logged_in:
+        return redirect(url_for('users.login'))
     if request.method == 'GET':
         result = do_get_user(user_id)
         if result.success:
@@ -63,6 +75,8 @@ def get(user_id):
 
 @mod.route('/users/get_all')
 def get_all():
+    if not g.logged_in:
+        return redirect(url_for('users.login'))
     if request.method == 'GET':
         if 'page' not in request.args:
             return redirect(url_for('users.get_all', page=1))

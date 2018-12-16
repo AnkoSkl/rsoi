@@ -8,11 +8,15 @@ mod = Blueprint('movies', __name__)
 
 @mod.route('/movies/')
 def index():
+    if not g.logged_in:
+        return redirect(url_for('users.login'))
     return render_template("/movies/index.html")
 
 
 @mod.route('/movies/create', methods=['GET', 'POST'])
 def create():
+    if not g.logged_in:
+        return redirect(url_for('users.login'))
     if request.method == 'GET':
         return render_template("/movies/create.html")
     else:
@@ -54,6 +58,8 @@ def create():
 
 @mod.route('/movies/get', methods=['GET', 'POST'])
 def get():
+    if not g.logged_in:
+        return redirect(url_for('users.login'))
     if request.method == 'GET':
         return render_template("/movies/get.html", movie_found = False)
     else:
@@ -78,6 +84,8 @@ def get():
 
 @mod.route('/movies/delete/<movie_id>', methods=['GET', 'POST'])
 def delete(movie_id):
+    if not g.logged_in:
+        return redirect(url_for('users.login'))
     if request.method == 'GET':
         return render_template("/movies/delete.html", movie_id=movie_id)
     else:
@@ -102,6 +110,8 @@ def delete(movie_id):
 
 @mod.route('/movies/get_all')
 def get_all():
+    if not g.logged_in:
+        return redirect(url_for('users.login'))
     if request.method == 'GET':
         if 'page' not in request.args:
             return redirect(url_for('movies.get_all', page=1))

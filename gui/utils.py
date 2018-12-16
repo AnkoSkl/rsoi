@@ -71,6 +71,14 @@ def do_authorization(login, password):
     return result
 
 
+@request_handler(redirect_url='menu.index')
+def do_logout():
+    response = make_response("")
+    if 'token' in request.cookies:
+        response.delete_cookie('token')
+    return response
+
+
 @request_handler(redirect_url='seance.index')
 def do_get_user(user_id):
     result = gateway_api_request(current_config.USER_SERVICE_PATH+'/'+user_id, 'GET')
