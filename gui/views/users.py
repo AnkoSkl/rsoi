@@ -59,12 +59,15 @@ def get(user_id):
     if not g.logged_in:
         return redirect(url_for('users.login'))
     if request.method == 'GET':
-        result = do_get_user(user_id)
+        result = do_get_user(user_id, request.cookies)
         if result.success:
             if result.response.status_code == 200:
                 user = json.loads(result.response.content)
                 ticket_ids = user['ticket_ids']
                 return render_template("/users/get.html", user = user, ticket_ids = ticket_ids)
+            elif result.response.status_code == 403:
+                do_logout()
+                return redirect(url_for('users.login'))
             else:
                 flash('Ошибка. Фильма или сеанса не существует.', "error")
                 return redirect(url_for('seances.get_all'), "error")
@@ -81,7 +84,7 @@ def get_all():
         if 'page' not in request.args:
             return redirect(url_for('users.get_all', page=1))
         page = request.args.get('page', 1, type=int)
-        result = do_get_paginated_user(page, 10)
+        result = do_get_paginated_user(page, 10, request.cookies)
         if result.success:
             if result.response.status_code == 200:
                 users_obj = result.response.content
@@ -98,6 +101,9 @@ def get_all():
                         users.append(json.loads(user1))
                 return render_template("/users/get_all.html", users=users, prev_url=dictr['is_prev_page'],
                                        next_url=dictr['is_next_page'], next_page=page+1, prev_page=page-1)
+            elif result.response.status_code == 403:
+                do_logout()
+                return redirect(url_for('users.login'))
             else:
                 flash("Потзователь не найден", "error")
                 return redirect(url_for('users.index'))

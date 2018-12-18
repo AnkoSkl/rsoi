@@ -17,6 +17,15 @@ class GatewayTicketResource(Resource):
         req = requests.session()
         for cookie in flask.request.cookies:
             req.cookies[cookie] = flask.request.cookies[cookie]
+        cookies = req.cookies
+        token = cookies['token']
+
+        response = requests.get(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
+                                "/token", data=jsonpickle.encode({'token':token}))
+        result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                response=response.content)
+        if result.status_code != 200:
+            return result
         response = requests.get(current_config.TICKET_SERVICE_URL + current_config.TICKET_SERVICE_PATH +
                                 "/%s" % ticket_id)
         result = flask.Response(status=response.status_code, headers=response.headers.items(),
@@ -40,6 +49,15 @@ class GatewayTicketListResource(Resource):
             req = requests.session()
             for cookie in flask.request.cookies:
                 req.cookies[cookie] = flask.request.cookies[cookie]
+            cookies = req.cookies
+            token = cookies['token']
+
+            response = requests.get(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
+                                    "/token", data=jsonpickle.encode({'token':token}))
+            result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                    response=response.content)
+            if result.status_code != 200:
+                return result
         except:
             args = {'page': 1, 'page_size': 5}
         app.logger.info('Номер страницы: %d; количество билетов на странице: %d' % (args['page'], args['page_size']))
@@ -62,6 +80,15 @@ class GatewaySeanceResource(Resource):
         req = requests.session()
         for cookie in flask.request.cookies:
             req.cookies[cookie] = flask.request.cookies[cookie]
+        cookies = req.cookies
+        token = cookies['token']
+
+        response = requests.get(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
+                                "/token", data=jsonpickle.encode({'token':token}))
+        result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                response=response.content)
+        if result.status_code != 200:
+            return result
         response_seance = requests.get(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
                                        "/%s" % seance_id)
         if response_seance.status_code == 200:
@@ -104,6 +131,15 @@ class GatewaySeanceCreateResource(Resource):
             req = requests.session()
             for cookie in flask.request.cookies:
                 req.cookies[cookie] = flask.request.cookies[cookie]
+            cookies = req.cookies
+            token = cookies['token']
+
+            response = requests.get(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
+                                    "/token", data=jsonpickle.encode({'token':token}))
+            result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                    response=response.content)
+            if result.status_code != 200:
+                return result
         except:
             payload = {'movie_id': '5bd89b59af13c757e1b7f3fd', 'datetime': '12.11.2018_20:00', 'number_of_seats': 50}
             response = requests.post(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
@@ -128,6 +164,15 @@ class GatewaySeanceListResource(Resource):
             req = requests.session()
             for cookie in flask.request.cookies:
                 req.cookies[cookie] = flask.request.cookies[cookie]
+            cookies = req.cookies
+            token = cookies['token']
+
+            response = requests.get(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
+                                    "/token", data=jsonpickle.encode({'token':token}))
+            result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                    response=response.content)
+            if result.status_code != 200:
+                return result
             args = self.parser.parse_args(strict=True)
         except:
             args = {'page': 1, 'page_size': 5}
@@ -150,6 +195,15 @@ class GatewayMovieResource(Resource):
         req = requests.session()
         for cookie in flask.request.cookies:
             req.cookies[cookie] = flask.request.cookies[cookie]
+        cookies = req.cookies
+        token = cookies['token']
+
+        response = requests.get(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
+                                "/token", data=jsonpickle.encode({'token':token}))
+        result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                response=response.content)
+        if result.status_code != 200:
+            return result
         app.logger.info('Получен запрос на получение информации о фильме с идентификатором %s' % movie_id)
         response = requests.get(current_config.MOVIE_SERVICE_URL + current_config.MOVIE_SERVICE_PATH +
                                 "/%s" % movie_id)
@@ -165,6 +219,15 @@ class GatewayMovieResource(Resource):
         req = requests.session()
         for cookie in flask.request.cookies:
             req.cookies[cookie] = flask.request.cookies[cookie]
+        cookies = req.cookies
+        token = cookies['token']
+
+        response = requests.get(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
+                                "/token", data=jsonpickle.encode({'token':token}))
+        result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                response=response.content)
+        if result.status_code != 200:
+            return result
         app.logger.info('Получен запрос на удаление фильма с идентификатором %s' % movie_id)
         response = requests.delete(current_config.MOVIE_SERVICE_URL + current_config.MOVIE_SERVICE_PATH +
                                    "/%s" % movie_id)
@@ -184,6 +247,15 @@ class GatewayMovieCreateResource(Resource):
             req = requests.session()
             for cookie in flask.request.cookies:
                 req.cookies[cookie] = flask.request.cookies[cookie]
+            cookies = req.cookies
+            token = cookies['token']
+
+            response = requests.get(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
+                                    "/token", data=jsonpickle.encode({'token':token}))
+            result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                    response=response.content)
+            if result.status_code != 200:
+                return result
             response = requests.post(current_config.MOVIE_SERVICE_URL + current_config.MOVIE_SERVICE_PATH +
                                      current_config.CREATE_PATH, data=flask.request.data)
         except:
@@ -211,6 +283,15 @@ class GatewayMovieListResource(Resource):
             req = requests.session()
             for cookie in flask.request.cookies:
                 req.cookies[cookie] = flask.request.cookies[cookie]
+            cookies = req.cookies
+            token = cookies['token']
+
+            response = requests.get(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
+                                    "/token", data=jsonpickle.encode({'token':token}))
+            result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                    response=response.content)
+            if result.status_code != 200:
+                return result
         except:
             args = {'page': 1, 'page_size': 5}
         page = args['page']
@@ -233,6 +314,15 @@ class GatewayUserResource(Resource):
         req = requests.session()
         for cookie in flask.request.cookies:
             req.cookies[cookie] = flask.request.cookies[cookie]
+        cookies = req.cookies
+        token = cookies['token']
+
+        response = requests.get(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
+                                "/token", data=jsonpickle.encode({'token':token}))
+        result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                response=response.content)
+        if result.status_code != 200:
+            return result
         response = requests.get(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
                                 "/%s" % user_id)
         result = flask.Response(status=response.status_code, headers=response.headers.items(),
@@ -257,6 +347,15 @@ class GatewayUserListResource(Resource):
             req = requests.session()
             for cookie in flask.request.cookies:
                 req.cookies[cookie] = flask.request.cookies[cookie]
+            cookies = req.cookies
+            token = cookies['token']
+
+            response = requests.get(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
+                                    "/token", data=jsonpickle.encode({'token':token}))
+            result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                    response=response.content)
+            if result.status_code != 200:
+                return result
         except:
             args = {'page': 1, 'page_size': 5}
         app.logger.info('Номер страницы: %d; количество пользователей на странице: %d'

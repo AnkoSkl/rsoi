@@ -32,15 +32,15 @@ def request_handler(redirect_url):
 
 
 @request_handler(redirect_url='tickets.index')
-def do_get_paginated_tickets(page, page_size):
+def do_get_paginated_tickets(page, page_size, cookies):
     result = gateway_api_request(current_config.TICKET_SERVICE_PATH, 'GET',
-                                 params=(('page', page), ('page_size', page_size)))
+                                 params=(('page', page), ('page_size', page_size)), cookies=cookies)
     return result
 
 
 @request_handler(redirect_url='tickets.index')
-def do_get_ticket(ticket_id):
-    result = gateway_api_request(current_config.TICKET_SERVICE_PATH+'/'+ticket_id, 'GET')
+def do_get_ticket(ticket_id, cookies):
+    result = gateway_api_request(current_config.TICKET_SERVICE_PATH+'/'+ticket_id, 'GET', cookies=cookies)
     return result
 
 
@@ -59,9 +59,9 @@ def do_return_ticket(ticket_id, cookies):
 
 
 @request_handler(redirect_url='seance.index')
-def do_get_paginated_user(page, page_size):
+def do_get_paginated_user(page, page_size, cookies):
     result = gateway_api_request(current_config.USER_SERVICE_PATH, 'GET',
-                                 params=(('page', page), ('page_size', page_size)))
+                                 params=(('page', page), ('page_size', page_size)), cookies=cookies)
     return result
 
 
@@ -81,56 +81,56 @@ def do_logout():
 
 
 @request_handler(redirect_url='seance.index')
-def do_get_user(user_id):
-    result = gateway_api_request(current_config.USER_SERVICE_PATH+'/'+user_id, 'GET')
+def do_get_user(user_id, cookies):
+    result = gateway_api_request(current_config.USER_SERVICE_PATH+'/'+user_id, 'GET', cookies=cookies)
     return result
 
 
 @request_handler(redirect_url='movies.get_all')
-def do_create_seance(movie_id, number_of_seats, date_time):
+def do_create_seance(movie_id, number_of_seats, date_time, cookies):
     result = gateway_api_request(current_config.SEANCE_SERVICE_PATH + current_config.CREATE_PATH, 'POST',
                                  {'movie_id': movie_id,
                                   'datetime': date_time,
-                                  'number_of_seats': int(number_of_seats)})
+                                  'number_of_seats': int(number_of_seats)}, cookies=cookies)
     return result
 
 
 @request_handler(redirect_url='seance.index')
-def do_get_paginated_seance(page, page_size):
+def do_get_paginated_seance(page, page_size, cookies):
     result = gateway_api_request(current_config.SEANCE_SERVICE_PATH, 'GET',
-                                 params=(('page', page), ('page_size', page_size)))
+                                 params=(('page', page), ('page_size', page_size)), cookies=cookies)
     return result
 
 
 @request_handler(redirect_url='seance.index')
-def do_get_seance(seance_id):
-    result = gateway_api_request(current_config.SEANCE_SERVICE_PATH+'/'+seance_id, 'GET')
+def do_get_seance(seance_id, cookies):
+    result = gateway_api_request(current_config.SEANCE_SERVICE_PATH+'/'+seance_id, 'GET', cookies=cookies)
     return result
 
 
 @request_handler(redirect_url='movies.index')
-def do_create_movie(name, description, length):
+def do_create_movie(name, description, length, cookies):
     result = gateway_api_request(current_config.MOVIE_SERVICE_PATH + current_config.CREATE_PATH, 'POST',
-                                 {'name': name, 'description': description, 'length': int(length)})
+                                 {'name': name, 'description': description, 'length': int(length)}, cookies=cookies)
     return result
 
 
 @request_handler(redirect_url='movies.index')
-def do_get_movie(movie_id):
-    result = gateway_api_request(current_config.MOVIE_SERVICE_PATH + '/' + movie_id, 'GET')
+def do_get_movie(movie_id, cookies):
+    result = gateway_api_request(current_config.MOVIE_SERVICE_PATH + '/' + movie_id, 'GET', cookies=cookies)
     return result
 
 
 @request_handler(redirect_url='movies.index')
-def do_get_paginated_movie(page, page_size):
+def do_get_paginated_movie(page, page_size, cookies):
     result = gateway_api_request(current_config.MOVIE_SERVICE_PATH, 'GET',
-                                 params=(('page', page), ('page_size', page_size)))
+                                 params=(('page', page), ('page_size', page_size)), cookies=cookies)
     return result
 
 
 @request_handler(redirect_url='movies.index')
-def do_delete_movie(movie_id):
-    result = gateway_api_request(current_config.MOVIE_SERVICE_PATH + '/' + movie_id, 'DELETE')
+def do_delete_movie(movie_id, cookies):
+    result = gateway_api_request(current_config.MOVIE_SERVICE_PATH + '/' + movie_id, 'DELETE', cookies)
     return result
 
 

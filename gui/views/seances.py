@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, session, redirect, url_for, \
      request, flash, g, jsonify, abort
-from gui.utils import do_create_seance, do_get_paginated_seance, do_get_seance
+from gui.utils import do_create_seance, do_get_paginated_seance, do_get_seance, do_logout
 import json
 
 mod = Blueprint('seances', __name__)
@@ -18,7 +18,7 @@ def get(seance_id):
     if not g.logged_in:
         return redirect(url_for('users.login'))
     if request.method == 'GET':
-        result = do_get_seance(seance_id)
+        result = do_get_seance(seance_id, request.cookies)
         if result.success:
             if result.response.status_code == 200:
                 tmp = str(result.response.content)
@@ -36,6 +36,9 @@ def get(seance_id):
                 movie_d = json.loads(movie)
                 return render_template("/seances/get.html", seance=seance_d, movie=movie_d, seats = ar,
                                        datetime = dictionary, number_of_seats = len(ar)+1)
+            elif result.response.status_code == 403:
+                do_logout()
+                return redirect(url_for('users.login'))
             else:
                 flash('Ошибка. Фильма или сеанса не существует.', "error")
                 return redirect(url_for('seances.get_all'), "error")
@@ -75,12 +78,15 @@ def create():
         if failed:
             return render_template("/seances/create.html", movie_id=request.args['movie_id'])
 
-        result = do_create_seance(request.args['movie_id'], number_of_seats, date_time)
+        result = do_create_seance(request.args['movie_id'], number_of_seats, date_time, request.cookies)
         if result.success:
             if result.response.status_code == 201:
                 flash('Сеанс успешно создан', "info")
                 response = redirect('movies/get_all')
                 return response
+            elif result.response.status_code == 403:
+                do_logout()
+                return redirect(url_for('users.login'))
             else:
                 st = result.response.content.decode('utf-8')
                 if st=='':
@@ -100,7 +106,7 @@ def get_all():
         if 'page' not in request.args:
             return redirect(url_for('seances.get_all', page=1))
         page = request.args.get('page', 1, type=int)
-        result = do_get_paginated_seance(page, 10)
+        result = do_get_paginated_seance(page, 10, request.cookies)
         if result.success:
             if result.response.status_code == 200:
                 seances_obj = result.response.content
@@ -129,6 +135,9 @@ def get_all():
                         seances.append(dictionary)
                 return render_template("/seances/get_all.html", seances=seances, prev_url=dictr['is_prev_page'],
                                        next_url=dictr['is_next_page'], next_page=page+1, prev_page=page-1)
+            elif result.response.status_code == 403:
+                do_logout()
+                return redirect(url_for('users.login'))
             else:
                 flash("Сеансы не найдены", "error")
                 return redirect(url_for('seances.index'))

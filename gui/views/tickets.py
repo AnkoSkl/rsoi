@@ -25,12 +25,15 @@ def get():
             return redirect(url_for('tickets.get'))
         else:
             ticket_id = request.form["ticket_id"]
-            result = do_get_ticket(ticket_id)
+            result = do_get_ticket(ticket_id, request.cookies)
 
             if result.success:
                 if result.response.status_code == 200:
                     ticket = json.loads(result.response.content)
                     return render_template("/tickets/get.html", ticket=ticket, ticket_found=True)
+                elif result.response.status_code == 403:
+                    do_logout()
+                    return redirect(url_for('users.login'))
                 else:
                     flash("Билет не найден", "error")
                     return redirect(url_for('tickets.get'))
@@ -96,7 +99,7 @@ def get_all():
             if request.form['submit'] == 'Удалить фильм':
                 pass
         page = request.args.get('page', 1, type=int)
-        result = do_get_paginated_tickets(page, 10)
+        result = do_get_paginated_tickets(page, 10, request.cookies)
         if result.success:
             if result.response.status_code == 200:
                 tickets_obj = result.response.content
@@ -113,6 +116,9 @@ def get_all():
                         tickets.append(json.loads(ticket1))
                 return render_template("/tickets/get_all.html", tickets=tickets, prev_url=dictr['is_prev_page'],
                                        next_url=dictr['is_next_page'], next_page=page+1, prev_page=page-1)
+            elif result.response.status_code == 403:
+                do_logout()
+                return redirect(url_for('users.login'))
             else:
                 flash("Билеты не найдены", "error")
                 return redirect(url_for('tickets.index'))
