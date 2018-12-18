@@ -26,7 +26,7 @@ class Token:
     def is_expired(token_string):
         if token_string is None:
             return True
-        token_string = base64.b64decode(str.encode(token_string.decode('utf-8')))
+        token_string = base64.b64decode(token_string) #base64.b64decode(str.encode(token_string.decode('utf-8')))
         token = serializer.loads(token_string)
         return dateutil.parser.parse(token['expiration']) < datetime.datetime.now()
 
@@ -34,7 +34,7 @@ class Token:
     def check_value(token_string, value):
         if token_string is None:
             return False
-        token_string = base64.b64decode(str.encode(token_string.decode('utf-8')))
+        token_string = base64.b64decode(token_string)
         token = serializer.loads(token_string)
         return token['value'] == value
 
@@ -42,13 +42,13 @@ class Token:
     def get_value(token_string):
         if token_string is None:
             return False
-        token_string = base64.b64decode(str.encode(token_string.decode('utf-8')))
+        token_string = base64.b64decode(token_string)
         token = serializer.loads(token_string)
         return token['value']
 
     @staticmethod
     def refresh(token_string):
-        token_string = base64.b64decode(str.encode(token_string.decode('utf-8')))
+        token_string = base64.b64decode(token_string)
         token = serializer.loads(token_string)
         token['expiration'] = (datetime.datetime.now() +
                                datetime.timedelta(seconds=current_config.TOKEN_EXPIRATION_TIME)).isoformat()

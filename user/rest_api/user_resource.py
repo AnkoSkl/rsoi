@@ -82,6 +82,24 @@ class UserCreateResource(Resource):
         return response
 
 
+class UserTokenResource(Resource):
+    def get(self):
+        repo = UserRepository()
+        app.logger.info('Получен запрос на получение пользователя по токену')
+        payload = jsonpickle.decode(flask.request.data)
+        token = payload['token']
+        user = repo.get_real_user_by_token(token)
+        if user is not None:
+            response = app.make_response("Пользователь получен по токену")
+            response.status_code = 200
+            response.data = user.to_json()
+            response.content_type = "application/json"
+            return response
+        response = app.make_response("Ошибка получения пользователя по токену")
+        response.status_code = 403
+        return response
+
+
 class UserAuthorizationResource(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument("name", type=str)

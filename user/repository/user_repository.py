@@ -39,6 +39,14 @@ class UserRepository:
         else:
             return None
 
+    def get_real_user_by_token(self, token):
+        user = self.get_by_token(token)
+        if user is None:
+            return user
+        ticket_ids = jsonpickle.decode(user.ticket_ids)
+        return User(user_id=user.mongo_id, ticket_ids=ticket_ids, name=user.name, admin=user.admin)
+
+
     def get_by_token(self, token):
         if not Token.is_expired(token):
             login = Token.get_value(token)

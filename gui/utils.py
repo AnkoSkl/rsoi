@@ -45,9 +45,10 @@ def do_get_ticket(ticket_id):
 
 
 @request_handler(redirect_url='tickets.index')
-def do_buy_ticket(seance_id, seat_number):
+def do_buy_ticket(seance_id, seat_number, cookies):
     result = gateway_api_request(current_config.TICKET_SERVICE_PATH+'/buy', 'POST', {'seat_number':seat_number,
-                                                                                     'seance_id':seance_id})
+                                                                                     'seance_id':seance_id},
+                                 cookies=cookies)
     return result
 
 
