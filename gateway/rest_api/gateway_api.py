@@ -367,13 +367,24 @@ class GatewayBuyTicket(Resource):
 
 
 class GatewayReturnTicket(Resource):
-    user_id = "5bd0a351af13c713737dae92"
+    #user_id = "5bd0a351af13c713737dae92"
 
     def delete(self, ticket_id):
         app.logger.info('Получен запрос на возврат билета')
         req = requests.session()
         for cookie in flask.request.cookies:
             req.cookies[cookie] = flask.request.cookies[cookie]
+        cookies = req.cookies
+        token = cookies['token']
+        response = requests.get(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
+                                "/token", data=jsonpickle.encode({'token':token}))
+        result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                response=response.content)
+        if result.status_code != 200:
+            return result
+        user = User.from_json(response.content)
+        user_id = user.id
+
         response = requests.get(current_config.TICKET_SERVICE_URL + current_config.TICKET_SERVICE_PATH +
                                 "/%s" % ticket_id)
         if response.status_code == 200:
@@ -399,14 +410,14 @@ class GatewayReturnTicket(Resource):
 
         payload3 = {'ticket_id': ticket_id, 'status': 'return'}
         response = requests.patch(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
-                                  "/%s" % self.user_id, jsonpickle.encode(payload3))
+                                  "/%s" % user_id, jsonpickle.encode(payload3))
         if response.status_code == 201:
-            app.logger.info('Возврат билета для пользователя %s успешно произведен' % self.user_id)
+            app.logger.info('Возврат билета для пользователя %s успешно произведен' % user_id)
         else:
             payload1['status'] = 'buy'
             requests.patch(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
                            "/%s" % ticket.seance_id, jsonpickle.encode(payload1))
-            app.logger.warning('Возврат билета для пользователя %s не может быть произведен' % self.user_id)
+            app.logger.warning('Возврат билета для пользователя %s не может быть произведен' % user_id)
             result = flask.Response(status=response.status_code, headers=response.headers.items(),
                                     response=response.content)
             return result
@@ -423,6 +434,6 @@ class GatewayReturnTicket(Resource):
                            "/%s" % ticket.seance_id, jsonpickle.encode(payload1))
             payload3['status'] = 'buy'
             requests.patch(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
-                           "/%s" % self.user_id, jsonpickle.encode(payload3))
+                           "/%s" % user_id, jsonpickle.encode(payload3))
             app.logger.warning('Билет с идентификатором %s не может быть удален' % ticket_id)
         return result

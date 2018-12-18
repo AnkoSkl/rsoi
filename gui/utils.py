@@ -53,8 +53,8 @@ def do_buy_ticket(seance_id, seat_number, cookies):
 
 
 @request_handler(redirect_url='tickets.index')
-def do_return_ticket(ticket_id):
-    result = gateway_api_request(current_config.TICKET_SERVICE_PATH+'/return/'+ticket_id, 'DELETE')
+def do_return_ticket(ticket_id, cookies):
+    result = gateway_api_request(current_config.TICKET_SERVICE_PATH+'/return/'+ticket_id, 'DELETE', cookies=cookies)
     return result
 
 
