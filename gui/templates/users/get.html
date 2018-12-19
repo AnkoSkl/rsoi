@@ -14,7 +14,7 @@
             </table>
             {% for ticket_id in ticket_ids %}
                 <p>
-            <a href="{{ url_for('tickets.return_ticket', ticket_id=ticket_id) }}">{{ ticket_id }} (нажмите, чтобы стать билет)</a>
+            <a href="{{ url_for('tickets.return_ticket', ticket_id=ticket_id) }}">{{ ticket_id }} (нажмите, чтобы сдать билет)</a>
             {% endfor %}
     </form>
 {% endblock %}

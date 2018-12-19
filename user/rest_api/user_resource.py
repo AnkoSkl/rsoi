@@ -139,7 +139,7 @@ class UserAuthorizationResource(Resource):
         parser.add_argument("password", type=str)
         repo = UserRepository()
         app.logger.info('Получен запрос на аутентификацию')
-        args = self.parser.parse_args(strict=True)
+        args = parser.parse_args(strict=True)
         #payload = jsonpickle.decode(flask.request.data)
         token = repo.get_token(args['name'], args['password'])
         if token is not None:
