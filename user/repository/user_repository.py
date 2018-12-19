@@ -116,6 +116,21 @@ class UserRepository:
                 return t
         return None
 
+    def get_code(self, client_id):
+        if self.exists(client_id):
+            return 'edaf13c7'
+        return None
+
+    def get_token_for_auth(self, client_id, client_secret, code):
+        if self.exists(client_id):
+            if code == 'edaf13c7':
+                user = Users.query.get(client_id)
+                t = Token.generate(user.name).serialize()
+                user.token = str(t)
+                user.save()
+                return t
+        return None
+
     def check_password_for_user(self, login, password):
         if self.login_exists(login):
             user = self.get_user_by_login(login)

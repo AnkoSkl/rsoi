@@ -18,6 +18,7 @@ api.add_resource(GatewayMovieCreateResource, "/gateway/api/movies/create")
 api.add_resource(GatewayUserResource, "/gateway/api/users" + "/<user_id>")
 api.add_resource(GatewayUserListResource, "/gateway/api/users")
 api.add_resource(GatewayAuthorization, "/gateway/api/users/auth/token")
+api.add_resource(GatewayApiAuthorization, "/gateway/api/users/auth")
 
 
 if __name__ == '__main__':

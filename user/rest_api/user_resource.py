@@ -99,13 +99,44 @@ class UserTokenResource(Resource):
         response.status_code = 403
         return response
 
+    def post(self):
+        repo = UserRepository()
+        app.logger.info('Получен запрос на получение пользователя по токену')
+        payload = jsonpickle.decode(flask.request.data)
+        client_id = payload['client_id']
+        client_secret = payload['client_secret']
+        code = payload['code']
+        t = repo.get_token_for_auth(client_id, client_secret, code)
+        if t is not None:
+            response = app.make_response("Сгенерирован токен")
+            response.status_code = 200
+            response.set_cookie("token", value=t)
+            return response
+        response = app.make_response("Неверные данные")
+        response.status_code = 403
+        return response
+
 
 class UserAuthorizationResource(Resource):
-    parser = reqparse.RequestParser()
-    parser.add_argument("name", type=str)
-    parser.add_argument("password", type=str)
+    def post(self):
+        repo = UserRepository()
+        payload = jsonpickle.decode(flask.request.data)
+        client_id = payload['client_id']
+        code = repo.get_code(client_id)
+        if code is not None:
+            response = app.make_response("Authorization code was generated")
+            response.status_code = 201
+            response.data = json.dumps({"code": code})
+            response.content_type = "application/json"
+            return response
+        response = app.make_response("Ошибка генеации кода")
+        response.status_code = 404
+        return response
 
     def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("name", type=str)
+        parser.add_argument("password", type=str)
         repo = UserRepository()
         app.logger.info('Получен запрос на аутентификацию')
         args = self.parser.parse_args(strict=True)

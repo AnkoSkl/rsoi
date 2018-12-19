@@ -398,6 +398,35 @@ class GatewayAuthorization(Resource):
         return result
 
 
+class GatewayApiAuthorization(Resource):
+    def post(self):
+        req = requests.session()
+        for cookie in flask.request.cookies:
+            req.cookies[cookie] = flask.request.cookies[cookie]
+        payload = jsonpickle.decode(flask.request.data)
+        client_id = payload['client_id']
+        response = req.post(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH + "/auth/token",
+                            data=jsonpickle.encode({'client_id': client_id}))
+        result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                response=response.content)
+        return result
+
+    def get(self):
+        req = requests.session()
+        for cookie in flask.request.cookies:
+            req.cookies[cookie] = flask.request.cookies[cookie]
+        payload = jsonpickle.decode(flask.request.data)
+        client_id = payload['client_id']
+        client_secret = payload['client_secret']
+        code = payload['code']
+        response = req.post(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH + "/token",
+                            data=jsonpickle.encode({'client_id': client_id, 'client_secret': client_secret,
+                                                    'code': code}))
+        result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                response=response.content)
+        return result
+
+
 class GatewayBuyTicket(Resource):
     #user_id = "5bd0a351af13c713737dae92"
 

@@ -38,6 +38,20 @@ def do_get_paginated_tickets(page, page_size, cookies):
     return result
 
 
+@request_handler(redirect_url='users.login')
+def do_get_code(client_id):
+    result = gateway_api_request(current_config.USER_SERVICE_PATH+"/auth", 'POST',
+                                 data={'client_id': client_id})
+    return result
+
+
+@request_handler(redirect_url='users.login')
+def do_get_auth_token(client_id, client_secret, code):
+    result = gateway_api_request(current_config.USER_SERVICE_PATH+"/auth", 'GET',
+                                 data={'client_id': client_id, 'client_secret': client_secret, 'code': code})
+    return result
+
+
 @request_handler(redirect_url='tickets.index')
 def do_get_ticket(ticket_id, cookies):
     result = gateway_api_request(current_config.TICKET_SERVICE_PATH+'/'+ticket_id, 'GET', cookies=cookies)
@@ -137,7 +151,7 @@ def do_delete_movie(movie_id, cookies):
 def gateway_api_request(service_path, method, data=None, params=None, cookies=None):
     if method == 'GET':
         return requests.get(current_config.GATEWAY_SERVICE_URL + current_config.GATEWAY_SERVICE_PATH
-                            + service_path, params=params, cookies=cookies)
+                            + service_path, data=jsonpickle.encode(data), params=params, cookies=cookies)
     elif method == 'POST':
         return requests.post(current_config.GATEWAY_SERVICE_URL + current_config.GATEWAY_SERVICE_PATH
                              + service_path, data=jsonpickle.encode(data), params=params,
