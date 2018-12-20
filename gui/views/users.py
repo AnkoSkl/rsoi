@@ -13,29 +13,39 @@ def index():
     return render_template("/users/index.html")
 
 
-@mod.route('/APIlogin')
-def APIlogin():
-    client_id = '5c16252eaf13c74c7d98aea2'
+@mod.route('/APIlogin1')
+def APIlogin1():
+    client_id = 1
     client_secret = 123
     result = do_get_code(client_id)
     if result.success:
         if result.response.status_code == 201:
             code_d = json.loads(result.response.content)
             code = code_d['code']
-            result = do_get_auth_token(client_id, client_secret, code)
-            if result.success:
-                if result.response.status_code == 200:
-                    response = redirect(url_for('menu.index'))
-                    response.headers["Set-Cookie"] = result.response.headers["Set-Cookie"]
-                    g.user = result.response.cookies
-                    return response
-                else:
-                    flash(result.response.content.decode('utf-8'))
-                    return redirect(url_for('users.login'))
-            else:
-                flash(result.error)
+            response = redirect(url_for('users.APIlogin2', code=code, client_id=client_id, client_secret=client_secret))
+            return response
         else:
             flash(result.response.content.decode('utf-8'), 'error')
+            return redirect(url_for('users.login'))
+    else:
+        flash(result.error)
+    return redirect(url_for('users.login'))
+
+
+@mod.route('/APIlogin2')
+def APIlogin2():
+    client_id = request.args.get('client_id', type=int)
+    client_secret = request.args.get('client_secret', type=int)
+    code = request.args.get('code', type=str)
+    result = do_get_auth_token(client_id, client_secret, code)
+    if result.success:
+        if result.response.status_code == 200:
+            response = redirect(url_for('menu.index'))
+            response.headers["Set-Cookie"] = result.response.headers["Set-Cookie"]
+            g.user = result.response.cookies
+            return response
+        else:
+            flash(result.response.content.decode('utf-8'))
             return redirect(url_for('users.login'))
     else:
         flash(result.error)
@@ -102,7 +112,7 @@ def get(user_id):
                 return redirect(url_for('seances.get_all'), "error")
         else:
             flash(result.error, "error")
-            return redirect(url_for('seances.get_all'), "error")
+            return redirect(url_for('seances.get_all'))
 
 
 @mod.route('/users/get_all')
