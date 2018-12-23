@@ -103,18 +103,26 @@ class GatewaySeanceResource(Resource):
         seance = Seance.from_json(response_seance.content) #jsonpickle.decode(response_seance.content)
         movie_id = str(seance.movie_id)
 
-        response_movie = requests.get(current_config.MOVIE_SERVICE_URL + current_config.MOVIE_SERVICE_PATH +
-                                      "/%s" % movie_id)
-        if response_movie.status_code == 200:
+        try:
+            response_movie = requests.get(current_config.MOVIE_SERVICE_URL + current_config.MOVIE_SERVICE_PATH +
+                                          "/%s" % movie_id)
+        except:
+            response_movie = None
+        if response_movie is not None and response_movie.status_code == 200:
             app.logger.info('Запрос на получение информации о фильме с идентификатором %s успешно обработан'
                             % movie_id)
+            movie = Movie.from_json(response_movie.content)
+            response = seance.to_json() + '\n' + movie.to_json()
         else:
             app.logger.warning('Информация о фильме с идентификатором %s не модет быть получена' % movie_id)
-            result = flask.Response(status=response_movie.status_code, headers=response_movie.headers.items(),
-                                    response=response_movie.content)
-            return result
-        movie = Movie.from_json(response_movie.content)
-        response = seance.to_json() + '\n' + movie.to_json()
+            movie = {'movie_id': 'Information is not available', 'name': 'Information is not available',
+                     'description': 'Information is not available', 'length': 'Information is not available'}
+            response = seance.to_json() + '\n' + json.dumps(movie)
+            #Movie(movie_id=decoded_object["movie_id"], name=decoded_object["name"],
+            #      description=decoded_object["description"], length=decoded_object["length"])
+            #result = flask.Response(status=response_movie.status_code, headers=response_movie.headers.items(),
+            #                        response=response_movie.content)
+            #return result
         result = flask.Response(status=response_seance.status_code, headers=response_seance.headers.items(),
                                 response=response)
         app.logger.info('Запрос на получение подробной информации о сеансе с идентификатором %s успешно обработан'
