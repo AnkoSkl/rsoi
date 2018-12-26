@@ -74,16 +74,16 @@ def return_ticket(ticket_id):
         if result.success:
             if result.response.status_code == 204:
                 flash('Возврат билета успешно произведен', 'info')
-                return redirect(url_for('seances.get_all'))
+                return redirect(url_for('menu.index'))
             elif result.response.status_code == 403:
                 do_logout()
                 return redirect(url_for('users.login'))
             else:
                 flash('Возврат билета не может быть произведен', 'error')
-                return redirect(url_for('seances.get_all'))
+                return redirect(url_for('menu.index'))
         else:
             flash(result.error, 'error')
-            return redirect(url_for('seances.get_all'))
+            return redirect(url_for('menu.index'))
 
 
 @mod.route('/tickets/get_all')

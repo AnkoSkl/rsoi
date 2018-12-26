@@ -1,6 +1,7 @@
 from movie import app
 from flask_restful import Api
 from gateway.rest_api.gateway_api import *
+from gateway.queue.ticket_return_handling import TicketReturnHandling
 
 
 api = Api(app)
@@ -22,4 +23,7 @@ api.add_resource(GatewayApiAuthorization, "/gateway/api/users/auth")
 
 
 if __name__ == '__main__':
+    ticket_return_thread = TicketReturnHandling()
+    ticket_return_thread.start()
+
     app.run(debug=True)

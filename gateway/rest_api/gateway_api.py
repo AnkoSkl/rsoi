@@ -7,8 +7,9 @@ from movie.domain.movie import Movie
 from ticket.domain.ticket import Ticket
 from user.domain.user import User
 from config import current_config
-from gateway import app
+from gateway import app, replay_request_queue
 import json
+from gateway.queue.ticket_return_handling import Request
 
 
 class GatewayTicketResource(Resource):
@@ -534,42 +535,50 @@ class GatewayReturnTicket(Resource):
 
         ticket = Ticket.from_json(response.content) #jsonpickle.decode(response.content)
         payload1 = {'seat_number': ticket.seat_number, 'status': 'return'}
-        response = requests.patch(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
-                                  "/%s" % ticket.seance_id, jsonpickle.encode(payload1))
-        if response.status_code == 201:
-            app.logger.info('Освобождение места на сеансе успешно завершен')
-        else:
-            app.logger.warning('Освобождение места на сеансе не может быть завершено')
+        try:
+            response = requests.patch(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
+                                      "/%s" % ticket.seance_id, jsonpickle.encode(payload1))
+            if response.status_code == 201:
+                app.logger.info('Освобождение места на сеансе успешно завершен')
+            else:
+                app.logger.warning('Освобождение места на сеансе не может быть завершено, добавление запроса в очередь')
+                replay_request_queue.send_message(
+                    jsonpickle.encode(Request("TICKET_RETURN", data={"seance_id": ticket.seance_id,
+                                                                     "payload": payload1})),
+                    "ticket_return_handling_request")
+        except:
+            app.logger.warning('Освобождение места на сеансе не может быть завершено, добавление запроса в очередь')
+            replay_request_queue.send_message(jsonpickle.encode(Request("TICKET_RETURN", data={"seance_id": ticket.seance_id,
+                                                                                          "payload": payload1})),
+                                              "ticket_return_handling_request")
+        finally:
+
+            payload3 = {'ticket_id': ticket_id, 'status': 'return'}
+            response = requests.patch(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
+                                      "/%s" % user_id, jsonpickle.encode(payload3))
+            if response.status_code == 201:
+                app.logger.info('Возврат билета для пользователя %s успешно произведен' % user_id)
+            else:
+                payload1['status'] = 'buy'
+                requests.patch(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
+                               "/%s" % ticket.seance_id, jsonpickle.encode(payload1))
+                app.logger.warning('Возврат билета для пользователя %s не может быть произведен' % user_id)
+                result = flask.Response(status=response.status_code, headers=response.headers.items(),
+                                        response=response.content)
+                return result
+
+            response = requests.delete(current_config.TICKET_SERVICE_URL + current_config.TICKET_SERVICE_PATH +
+                                       "/%s" % ticket_id)
             result = flask.Response(status=response.status_code, headers=response.headers.items(),
                                     response=response.content)
+            if response.status_code == 204:
+                app.logger.info('Билет с идентификатором %s успешно удален' % ticket_id)
+            else:
+                payload1['status'] = 'buy'
+                requests.patch(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
+                               "/%s" % ticket.seance_id, jsonpickle.encode(payload1))
+                payload3['status'] = 'buy'
+                requests.patch(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
+                               "/%s" % user_id, jsonpickle.encode(payload3))
+                app.logger.warning('Билет с идентификатором %s не может быть удален' % ticket_id)
             return result
-
-        payload3 = {'ticket_id': ticket_id, 'status': 'return'}
-        response = requests.patch(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
-                                  "/%s" % user_id, jsonpickle.encode(payload3))
-        if response.status_code == 201:
-            app.logger.info('Возврат билета для пользователя %s успешно произведен' % user_id)
-        else:
-            payload1['status'] = 'buy'
-            requests.patch(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
-                           "/%s" % ticket.seance_id, jsonpickle.encode(payload1))
-            app.logger.warning('Возврат билета для пользователя %s не может быть произведен' % user_id)
-            result = flask.Response(status=response.status_code, headers=response.headers.items(),
-                                    response=response.content)
-            return result
-
-        response = requests.delete(current_config.TICKET_SERVICE_URL + current_config.TICKET_SERVICE_PATH +
-                                   "/%s" % ticket_id)
-        result = flask.Response(status=response.status_code, headers=response.headers.items(),
-                                response=response.content)
-        if response.status_code == 204:
-            app.logger.info('Билет с идентификатором %s успешно удален' % ticket_id)
-        else:
-            payload1['status'] = 'buy'
-            requests.patch(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
-                           "/%s" % ticket.seance_id, jsonpickle.encode(payload1))
-            payload3['status'] = 'buy'
-            requests.patch(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
-                           "/%s" % user_id, jsonpickle.encode(payload3))
-            app.logger.warning('Билет с идентификатором %s не может быть удален' % ticket_id)
-        return result
