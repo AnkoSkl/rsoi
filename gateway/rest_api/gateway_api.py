@@ -462,7 +462,7 @@ class GatewayBuyTicket(Resource):
         result = flask.Response(status=response.status_code, headers=response.headers.items(),
                                 response=response.content)
         if result.status_code != 201:
-            app.logger.error('Покупка билета на сеанс с идентификатором %s не может быть выполнена'
+            app.logger.error('Бронирование места на сеанс с идентификатором %s не может быть выполнено'
                              % payload["seance_id"])
             return result
         else:
@@ -490,7 +490,7 @@ class GatewayBuyTicket(Resource):
         response = requests.patch(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
                                   "/%s" % user_id, jsonpickle.encode(payload3))
         if response.status_code == 201:
-            app.logger.info('Покупка билета для пользователя успешно произведена')
+            app.logger.info('Бронирование места для пользователя успешно произведено')
         else:
             result = flask.Response(status=response.status_code, headers=response.headers.items(),
                                     response=response.content)
@@ -499,7 +499,7 @@ class GatewayBuyTicket(Resource):
                            payload["seance_id"], jsonpickle.encode(payload1))
             requests.delete(current_config.TICKET_SERVICE_URL + current_config.TICKET_SERVICE_PATH + "/" +
                             payload3['ticket_id'])
-            app.logger.warning('Покупка билета не может быть завершена')
+            app.logger.warning('Бронирование места не может быть завершено')
         return result
 
 
@@ -507,7 +507,7 @@ class GatewayReturnTicket(Resource):
     #user_id = "5bd0a351af13c713737dae92"
 
     def delete(self, ticket_id):
-        app.logger.info('Получен запрос на возврат билета')
+        app.logger.info('Получен запрос на отмену брони')
         req = requests.session()
         for cookie in flask.request.cookies:
             req.cookies[cookie] = flask.request.cookies[cookie]
@@ -557,12 +557,12 @@ class GatewayReturnTicket(Resource):
             response = requests.patch(current_config.USER_SERVICE_URL + current_config.USER_SERVICE_PATH +
                                       "/%s" % user_id, jsonpickle.encode(payload3))
             if response.status_code == 201:
-                app.logger.info('Возврат билета для пользователя %s успешно произведен' % user_id)
+                app.logger.info('Отмена брони для пользователя %s успешно произведена' % user_id)
             else:
                 payload1['status'] = 'buy'
                 requests.patch(current_config.SEANCE_SERVICE_URL + current_config.SEANCE_SERVICE_PATH +
                                "/%s" % ticket.seance_id, jsonpickle.encode(payload1))
-                app.logger.warning('Возврат билета для пользователя %s не может быть произведен' % user_id)
+                app.logger.warning('Отмена брони для пользователя %s не может быть произведена' % user_id)
                 result = flask.Response(status=response.status_code, headers=response.headers.items(),
                                         response=response.content)
                 return result

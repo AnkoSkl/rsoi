@@ -82,7 +82,7 @@ def create():
         if result.success:
             if result.response.status_code == 201:
                 flash('Сеанс успешно создан', "info")
-                response = redirect('movies/get_all')
+                response = redirect('movies.get_all')
                 return response
             elif result.response.status_code == 403:
                 do_logout()
@@ -92,10 +92,10 @@ def create():
                 if st=='':
                     st = str(result.response.content)
                 flash(st, "error")
-                return redirect(url_for('movies/get_all'))
+                return redirect(url_for('movies.get_all'))
         else:
             flash(result.error)
-            return redirect(url_for('movies/get_all'), "error")
+            return redirect(url_for('movies.get_all'), "error")
 
 
 @mod.route('/seances/get_all')

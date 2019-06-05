@@ -37,39 +37,39 @@ class SeanceResource(Resource):
 
     def patch(self, seance_id):
         repo = SeanceRepository()
-        app.logger.info('Получен запрос на покупку/возврат билета на сеанс с идентификатором %s' % seance_id)
+        app.logger.info('Получен запрос на бронирование/отмену брони места на сеанс с идентификатором %s' % seance_id)
         abort_if_seance_doesnt_exist(seance_id, repo)
         try:
             payload = jsonpickle.decode(flask.request.data)
         except:
             payload = {'status': 'buy', 'seat_number': 1}
         if payload["status"] == "buy":
-            app.logger.info('Покупка билета')
+            app.logger.info('Бронирование места')
             res = repo.get_a_seat(seance_id, payload["seat_number"])
             if res:
                 response = app.make_response("")
                 response.content_type = "application/json"
                 response.status_code = 201
-                app.logger.info('Место на сеанс %s успешно куплено' % seance_id)
+                app.logger.info('Место на сеанс %s успешно забронировано' % seance_id)
             else:
                 response = app.make_response("This seat cannot be bought!")
                 response.content_type = "application/json"
                 response.status_code = 409
-                app.logger.warning('Выбранное место на сеанс %s занято, покупка билета не может быть завершена'
+                app.logger.warning('Выбранное место на сеанс %s занято, бронирование места не может быть завершено'
                                    % seance_id)
         else:
-            app.logger.info('Возврат билета')
+            app.logger.info('Отмена брони')
             res = repo.free_a_seat(seance_id, payload["seat_number"])
             if res:
                 response = app.make_response("")
                 response.content_type = "application/json"
                 response.status_code = 201
-                app.logger.info('Возврат билета на сеанс %s успешно завершен' % seance_id)
+                app.logger.info('Отмена брони на сеанс %s успешно завершена' % seance_id)
             else:
                 response = app.make_response("This seat cannot be released!")
                 response.content_type = "application/json"
                 response.status_code = 409
-                app.logger.warning('Возврат билета на сеанс %s не может быть завершен, так как место еще не занято'
+                app.logger.warning('Отмена брони на сеанс %s не может быть завершена, так как место еще не занято'
                                 % seance_id)
 
         seance = repo.get(seance_id)

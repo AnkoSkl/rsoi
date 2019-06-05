@@ -52,13 +52,13 @@ def buy():
         result = do_buy_ticket(seance_id, int(seat_number), request.cookies)
         if result.success:
             if result.response.status_code == 201:
-                flash('Покупка билета успешно произведена', 'info')
+                flash('Бронирование места успешно произведено', 'info')
                 return redirect(url_for('seances.get_all'))
             elif result.response.status_code == 403:
                 do_logout()
                 return redirect(url_for('users.login'))
             else:
-                flash('Покупка билета не может быть произведена', 'error')
+                flash('Бронирование места не может быть произведено', 'error')
                 return redirect(url_for('seances.get_all'))
         else:
             flash(result.error, 'error')
@@ -73,13 +73,13 @@ def return_ticket(ticket_id):
         result = do_return_ticket(ticket_id, request.cookies)
         if result.success:
             if result.response.status_code == 204:
-                flash('Возврат билета успешно произведен', 'info')
+                flash('Отмена брони успешно произведена', 'info')
                 return redirect(url_for('menu.index'))
             elif result.response.status_code == 403:
                 do_logout()
                 return redirect(url_for('users.login'))
             else:
-                flash('Возврат билета не может быть произведен', 'error')
+                flash('Отмена брони не может быть произведена', 'error')
                 return redirect(url_for('menu.index'))
         else:
             flash(result.error, 'error')

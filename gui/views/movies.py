@@ -38,7 +38,11 @@ def create():
 
         name = request.form['name']
         description = request.form['description']
-        length = request.form['length']
+        try:
+            length = int(request.form['length'])
+        except:
+            flash('Длительность должна быть введена в минутах', 'error')
+            return redirect(url_for('movies.create'))
         if not isinstance(length, int):
             flash('Длительность должна быть введена в минутах', 'error')
             return redirect(url_for('movies.create'))

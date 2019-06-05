@@ -38,17 +38,17 @@ class UserResource(Resource):
 
     def patch(self, user_id):
         repo = UserRepository()
-        app.logger.info('Получен запрос на покупку/возврат билета для пользователя с идентификатором %s' % user_id)
+        app.logger.info('Получен запрос на бронирование/отмену брони места для пользователя с идентификатором %s' % user_id)
         abort_if_user_doesnt_exist(user_id, repo)
         try:
             payload = jsonpickle.decode(flask.request.data)
         except:
             payload = {'status': 'buy', 'ticket_id': '894bjhel892'}
         if payload["status"] == "buy":
-            app.logger.info('Покупка билета с идентификатором %s' % payload["ticket_id"])
+            app.logger.info('Бронирование места с идентификатором %s' % payload["ticket_id"])
             repo.assign_ticket(user_id, payload["ticket_id"])
         else:
-            app.logger.info('Возврат билета с идентификатором %s' % payload["ticket_id"])
+            app.logger.info('Отмена брони с идентификатором %s' % payload["ticket_id"])
             repo.remove_ticket(user_id, payload["ticket_id"])
         user = repo.get(user_id)
         response = app.make_response("")
@@ -56,10 +56,10 @@ class UserResource(Resource):
         response.data = user.to_json()
         response.content_type = "application/json"
         if payload["status"] == "buy":
-            app.logger.info('Покупка билета %s для пользователя %s успешно произведена'
+            app.logger.info('Бронирование %s места для пользователя %s успешно произведено'
                             % (payload["ticket_id"], user_id))
         else:
-            app.logger.info('Возврат билета %s для пользователя %s успешно произведен'
+            app.logger.info('Отмена брони %s для пользователя %s успешно произведена'
                             % (payload["ticket_id"], user_id))
         return response
 
